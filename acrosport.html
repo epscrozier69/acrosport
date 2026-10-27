@@ -226,6 +226,24 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;}
 .evalResultsTable td,.evalResultsTable th{text-align:center;}
 .evalResultsTable td.nameCell{text-align:left;font-weight:600;}
 .evalResultsTable td.grCell{font-weight:800;color:var(--brand-dark);background:#f7f8fc;}
+
+/* Colonne de gauche (Groupe/GR/Élève) figée au défilement horizontal */
+.valTable th:first-child,.valTable td:first-child,
+.evalResultsTable th:first-child,.evalResultsTable td:first-child,
+.recapTable th:first-child,.recapTable td:first-child{
+  position:sticky;
+  left:0;
+  z-index:2;
+  background:#fff;
+  box-shadow:2px 0 5px -3px rgba(20,24,40,.3);
+}
+.valTable thead th:first-child,
+.evalResultsTable thead th:first-child,
+.recapTable thead th:first-child{
+  z-index:3;
+  background:#f7f8fc;
+}
+.evalResultsTable td.grCell:first-child{ background:#f7f8fc; }
 .tdTier-I{background:var(--i-bg);color:var(--i);font-weight:700;}
 .tdTier-F{background:var(--f-bg);color:var(--f);font-weight:700;}
 .tdTier-S{background:var(--s-bg);color:var(--s);font-weight:700;}
