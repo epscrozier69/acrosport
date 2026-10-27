@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>EPS Joliot Curie - Acrosport</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#f1f4f9;
@@ -254,7 +255,6 @@ footer.app-foot{text-align:center;color:var(--muted);font-size:11px;padding:16px
   <div class="toolbar">
     <span id="saveIndicator"></span>
     <span id="syncIndicator" style="font-size:11px;opacity:.9;"></span>
-    <button class="btn ghost" onclick="App.openAide()">❔ Aide</button>
     <button class="btn ghost" onclick="App.exportData()">⬇️ Exporter</button>
     <button class="btn ghost" onclick="App.importDataFile()">⬆️ Importer</button>
     <button class="btn ghost" onclick="App.resetAllConfirm()">🗑️ Réinitialiser</button>
@@ -265,7 +265,7 @@ footer.app-foot{text-align:center;color:var(--muted);font-size:11px;padding:16px
 
 <main id="app"></main>
 
-<footer class="app-foot">Données enregistrées automatiquement sur cet appareil (navigateur). Utilisez « ⬇️ Exporter / ⬆️ Importer » pour transférer vos données entre ordinateur et tablette (voir « ❔ Aide » pour la méthode via OneDrive).</footer>
+<footer class="app-foot">Données enregistrées automatiquement sur cet appareil (navigateur), et synchronisées via le cloud entre vos appareils. « ⬇️ Exporter / ⬆️ Importer » restent disponibles pour une sauvegarde manuelle.</footer>
 
 <input type="file" id="hiddenFileInput" accept="application/json" style="display:none">
 <input type="file" id="hiddenCsvInput" accept=".csv,.tsv,text/csv,text/plain" style="display:none">
@@ -373,37 +373,6 @@ const LEVEL_DEFAULTS = {
 };
 
 const SHEET_URL_DEFAULT = "https://docs.google.com/spreadsheets/d/1bQy3r9rG96hfvezFIEFodEATNGVefb2_Gl6ihe1Pcns/edit?gid=0#gid=0";
-
-const APPS_SCRIPT_CODE = [
-  "// Code.gs — synchronisation Acrosport entre appareils",
-  "// 1. script.google.com > Nouveau projet > collez ce code (remplace tout)",
-  "// 2. Déployer > Nouveau déploiement > type \"Application Web\"",
-  "//    Exécuter en tant que : Moi | Qui a accès : Tout le monde",
-  "// 3. Copiez l'URL /exec obtenue dans l'application Acrosport",
-  "",
-  "var FILE_NAME = \"acrosport_sync_data.json\";",
-  "",
-  "function getOrCreateFile_() {",
-  "  var files = DriveApp.getFilesByName(FILE_NAME);",
-  "  if (files.hasNext()) return files.next();",
-  "  return DriveApp.createFile(FILE_NAME, JSON.stringify({lastModified: 0}), MimeType.PLAIN_TEXT);",
-  "}",
-  "",
-  "function doGet(e) {",
-  "  var file = getOrCreateFile_();",
-  "  return ContentService.createTextOutput(file.getBlob().getDataAsString())",
-  "    .setMimeType(ContentService.MimeType.JSON);",
-  "}",
-  "",
-  "function doPost(e) {",
-  "  var file = getOrCreateFile_();",
-  "  var body = e.postData.contents;",
-  "  JSON.parse(body); // validation : refuse un contenu non JSON",
-  "  file.setContent(body);",
-  "  return ContentService.createTextOutput(JSON.stringify({ok: true}))",
-  "    .setMimeType(ContentService.MimeType.JSON);",
-  "}"
-].join("\n");
 
 /* =========================================================================
    STATE
@@ -1915,6 +1884,9 @@ function renderRecapPanel(cid,c){
   const seancesEval = c.seances.filter(s=>s.evalConfig);
 
   let html = `
+      <div class="row" style="margin-bottom:10px;">
+        <button class="btn primary" onclick="App.exportClasseExcel('${cid}')">📊 Exporter en Excel (toutes les données)</button>
+      </div>
       <div class="table-wrap recapTable" style="max-height:520px;">
       <table><thead><tr><th>Élève</th>
         ${seancesEval.map(s=>`<th>Séance ${s.numero}</th>`).join("")}
@@ -1986,7 +1958,7 @@ function renderExigences(){
   <div class="acc">
     <div class="acc-head" onclick="App.toggleAcc('syncSettings',false)"><span class="chev">▶</span><h3>☁️ Synchronisation ordinateur ↔ tablette</h3><span class="meta">${App.getSyncUrl()?'activée':'non configurée'}</span></div>
     <div class="acc-body">
-      <div class="hint" style="margin-bottom:10px;">Collez ici l'URL de votre script Google (voir « ❔ Aide » en haut de page pour le code à déployer une seule fois). Une fois configurée sur <b>tous</b> vos appareils, l'application récupère automatiquement la dernière version enregistrée à l'ouverture, et envoie vos modifications en arrière-plan.</div>
+      <div class="hint" style="margin-bottom:10px;">URL de votre script Google Apps Script déployé. Une fois configurée sur <b>tous</b> vos appareils, l'application récupère automatiquement la dernière version enregistrée à l'ouverture, et envoie vos modifications en arrière-plan.</div>
       <div class="field" style="margin-bottom:10px;"><label>URL du script Google (Apps Script Web App)</label>
         <input type="text" style="width:100%;max-width:560px;" value="${App.getSyncUrl()}" placeholder="https://script.google.com/macros/s/AKfycb.../exec" onchange="App.setSyncUrl(this.value)"></div>
       <div class="row">
@@ -2171,6 +2143,85 @@ App.exportData = function(){
   URL.revokeObjectURL(url);
 };
 
+App.exportClasseExcel = function(cid){
+  if(typeof XLSX === "undefined"){
+    alert("⚠️ La bibliothèque d'export Excel n'a pas pu se charger. Vérifiez votre connexion internet puis réessayez.");
+    return;
+  }
+  const c = classe(cid);
+  if(!c) return;
+  const sorted = sortStudents(c.eleves);
+  const wb = XLSX.utils.book_new();
+  const safeSheetName = name => name.replace(/[:\\\/\?\*\[\]]/g,"-").slice(0,31);
+
+  const elevesRows = [["Nom Prénom","Sexe"]];
+  sorted.forEach(e=>elevesRows.push([e.nomPrenom, e.sexe||""]));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(elevesRows), "Élèves");
+
+  c.seances.forEach(s=>{
+    const phase = s.numero<=3 ? "pratique" : "evaluation";
+    let rows;
+    if(phase==="evaluation" && s.evalConfig){
+      const header = ["Groupe","N°","Élève","Figures","Liaisons"];
+      if(s.evalConfig.projetCollectif) header.push("Projet collectif");
+      header.push("Note globale");
+      rows = [header];
+      s.groupes.filter(g=>g.membres.length>0).forEach((g,gidx)=>{
+        g.membres.forEach((mid,mi)=>{
+          const e = c.eleves.find(x=>x.id===mid); if(!e) return;
+          const key = gradingUnitKeyForStudent(s,mid);
+          const row = [gidx+1, mi+1, e.nomPrenom, seanceGroupTier(s,key,"nbFigures")||"", seanceGroupTier(s,key,"liaisons")||""];
+          if(s.evalConfig.projetCollectif) row.push(seanceGroupTier(s,key,"projetCollectif")||"");
+          row.push(globalTierForStudent(s,e.id)||"");
+          rows.push(row);
+        });
+      });
+    } else {
+      rows = [["Élève","Statut","Figures validées","Implication","Attitude"]];
+      sorted.forEach(e=>{
+        const isAbs = s.absents.includes(e.id), isDisp = s.dispenses.includes(e.id);
+        const statut = isAbs ? "Absent" : isDisp ? "Dispensé" : "Présent";
+        let figCount = "";
+        if(!isAbs && !isDisp){
+          const g = s.groupes.find(gr=>gr.membres.includes(e.id));
+          figCount = g ? countValidations(s,g.id) : 0;
+        }
+        rows.push([e.nomPrenom, statut, figCount, (s.implication&&s.implication[e.id])||"", (s.attitude&&s.attitude[e.id])||""]);
+      });
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), safeSheetName("Séance "+s.numero));
+  });
+
+  const gymDefs = LEVEL_DEFAULTS[STATE.niveauActif].gym;
+  const gymRows = [["Élève","Roulade avant","Roulade arrière", STATE.niveauActif==='3eme'?"Trépied tenu 3s":"Trépied passager","ATR"]];
+  sorted.forEach(e=>{
+    gymRows.push([e.nomPrenom,
+      c.gym.rouladeAvant.resultats[e.id]||"",
+      c.gym.rouladeArriere.resultats[e.id]||"",
+      c.gym.trepied.resultats[e.id]||"",
+      c.gym.atr.resultats[e.id]||""]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(gymRows), "Éléments gymniques");
+
+  const seancesEval = c.seances.filter(s=>s.evalConfig);
+  const recapHeader = ["Élève"].concat(seancesEval.map(s=>"Séance "+s.numero)).concat(["Roulade AV","Roulade AR","Trépied","ATR"]);
+  const recapRows = [recapHeader];
+  sorted.forEach(e=>{
+    const row = [e.nomPrenom];
+    seancesEval.forEach(s=>{
+      if(s.absents.includes(e.id)) row.push("Abs.");
+      else if(s.dispenses.includes(e.id)) row.push("Disp.");
+      else row.push(globalTierForStudent(s,e.id)||"");
+    });
+    ["rouladeAvant","rouladeArriere","trepied","atr"].forEach(k=>row.push(c.gym[k].resultats[e.id]||""));
+    recapRows.push(row);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(recapRows), "Récap");
+
+  const d = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, "Acrosport_"+c.nom.replace(/[^a-zA-Z0-9]+/g,"_")+"_"+d+".xlsx");
+};
+
 App.importDataFile = function(){ document.getElementById("hiddenFileInput").click(); };
 document.getElementById("hiddenFileInput").addEventListener("change", function(e){
   const f = e.target.files[0];
@@ -2193,58 +2244,6 @@ App.resetAllConfirm = function(){
   if(!confirm("⚠️ Réinitialiser TOUTES les données (classes, élèves, séances, notes, banque de figures) ? Cette action est irréversible. Pensez à exporter une sauvegarde avant.")) return;
   STATE = freshState();
   save(); render();
-};
-
-App.openAide = function(){
-  openModal(`<div class="modalHead"><h3>Aide rapide</h3><button class="modalClose" onclick="App.closeModal()">✕</button></div>
-  <div class="modalBody">
-    <ol style="padding-left:18px;line-height:1.7;">
-      <li>Choisissez le niveau (4ème / 3ème) en haut.</li>
-      <li>Cliquez sur « + Importer élèves / classe » : collez les données copiées depuis le Google Sheet (ou importez un CSV), puis choisissez les classes à créer.</li>
-      <li>Dans l'onglet « ⭐ Exigences », importez l'image du tableau de figures et extrayez chaque figure (cadre à la souris) pour constituer la banque.</li>
-      <li>Dans une classe, créez les séances : présence, groupes/binômes générés automatiquement (modifiables), figures à valider en direct d'un clic.</li>
-      <li>À partir de la séance 4, les grilles d'évaluation (figures, liaisons, projet collectif) apparaissent — critères et barèmes sont modifiables.</li>
-      <li>L'onglet « Éléments gymniques » et « Récap » se remplissent automatiquement.</li>
-      <li>Pour passer d'un appareil à l'autre, voir « ☁️ Synchroniser ordinateur ↔ tablette » ci-dessous.</li>
-    </ol>
-    <h4 style="font-size:13px;margin:16px 0 6px;">☁️ Synchronisation automatique (recommandé)</h4>
-    <div class="hint" style="margin-bottom:10px;">Un petit script Google gratuit (hébergé sur votre propre compte Google) permet à l'application de toujours récupérer la dernière version enregistrée à l'ouverture, sur tous vos appareils, sans rien exporter/importer à la main.</div>
-    <ol style="padding-left:18px;line-height:1.8;margin-top:0;">
-      <li>Allez sur <a href="#" onclick="window.open('https://script.google.com','_blank');return false;">script.google.com</a>, créez un <b>nouveau projet</b>.</li>
-      <li>Supprimez le contenu par défaut et collez-y le code ci-dessous :
-        <div style="position:relative;margin:6px 0;">
-          <textarea id="appsScriptCode" readonly style="width:100%;min-height:150px;font-family:monospace;font-size:11px;padding:8px;border:1px solid var(--border);border-radius:8px;background:#f7f8fc;">${APPS_SCRIPT_CODE.replace(/</g,"&lt;")}</textarea>
-          <button class="btn small" style="position:absolute;top:6px;right:6px;" onclick="App.copyAppsScriptCode()">📋 Copier</button>
-        </div>
-      </li>
-      <li>Cliquez sur <b>Déployer</b> → <b>Nouveau déploiement</b> → type <b>Application Web</b>.
-        <br>Réglages : « Exécuter en tant que » = <b>Moi</b>, « Qui a accès » = <b>Tout le monde</b>.</li>
-      <li>Autorisez l'accès (c'est votre propre script, sur votre propre compte Google), puis <b>copiez l'URL de déploiement</b> obtenue (elle ressemble à <code>https://script.google.com/macros/s/.../exec</code>).</li>
-      <li>Collez cette URL dans l'application, onglet <b>⭐ Exigences → ⚙️ Paramètres → ☁️ Synchronisation</b>, <b>sur chaque appareil</b> (ordinateur ET tablette).</li>
-    </ol>
-    <div class="hint" style="margin-bottom:10px;">⚠️ Cette URL donne accès en lecture/écriture à vos données : ne la partagez qu'avec vous-même (ne la publiez pas).</div>
-
-    <h4 style="font-size:13px;margin:16px 0 6px;">Méthode manuelle (sans script)</h4>
-    <p style="margin:6px 0;"><b>Avec OneDrive</b>, puisque ce fichier s'y trouve déjà :</p>
-    <ol style="padding-left:18px;line-height:1.7;margin-top:0;">
-      <li>Sur l'ordinateur : cliquez sur <b>⬇️ Exporter</b> et enregistrez le fichier dans le même dossier OneDrive que <code>acrosport.html</code> (ex. <i>Documents/IA CLaude/Acrosport</i>).</li>
-      <li>OneDrive synchronise automatiquement ce dossier sur la tablette.</li>
-      <li>Sur la tablette : ouvrez <code>acrosport.html</code> depuis l'appli OneDrive, puis cliquez sur <b>⬆️ Importer</b> et sélectionnez ce fichier de sauvegarde.</li>
-      <li>Faites l'inverse après une séance sur tablette pour rapatrier les données vers l'ordinateur.</li>
-    </ol>
-    <p style="margin:6px 0;"><b>Sans OneDrive</b> : exportez le fichier et envoyez-le vous-même (email, clé USB, Drive...), puis importez-le sur l'autre appareil.</p>
-  </div>`);
-};
-
-App.copyAppsScriptCode = function(){
-  const ta = document.getElementById("appsScriptCode");
-  if(!ta) return;
-  ta.select();
-  try{
-    navigator.clipboard.writeText(ta.value).then(()=>alert("Code copié ! Collez-le dans script.google.com.")).catch(()=>document.execCommand("copy"));
-  }catch(e){
-    try{ document.execCommand("copy"); alert("Code copié !"); }catch(e2){ alert("Sélectionnez le texte puis copiez-le (Ctrl+C)."); }
-  }
 };
 
 /* =========================================================================
