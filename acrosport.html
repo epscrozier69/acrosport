@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>EPS Joliot Curie - Acrosport</title>
+<style>
+:root{
+  --bg:#f1f4f9;
+  --card:#ffffff;
+  --ink:#1c2433;
+  --muted:#6b7686;
+  --border:#e1e6ee;
+  --brand:#5b4ddb;
+  --brand-dark:#4336b8;
+  --brand-light:#eceaff;
+  --accent:#ff7a59;
+  --i:#e53935; --i-bg:#fdecea;
+  --f:#fb8c00; --f-bg:#fff3e0;
+  --s:#2e7d32; --s-bg:#e8f5e9;
+  --tb:#2e7d00; --tb-bg:#c6ff00;
+  --radius:14px;
+  --shadow:0 2px 10px rgba(30,40,70,.07), 0 1px 2px rgba(30,40,70,.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:14.5px;
+  line-height:1.35;
+}
+h1,h2,h3,h4{margin:0;}
+button,input,select,textarea{font-family:inherit;font-size:inherit;}
+button{cursor:pointer;}
+a{color:var(--brand-dark);}
+
+/* ===== Header ===== */
+header.topbar{
+  background:linear-gradient(120deg,var(--brand),var(--brand-dark) 70%);
+  color:#fff;
+  padding:12px 18px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:var(--shadow);
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;
+}
+header.topbar .title{display:flex;align-items:center;gap:10px;}
+header.topbar .title .logo{
+  width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+header.topbar h1{font-size:18px;font-weight:700;letter-spacing:.2px;}
+header.topbar .sub{font-size:11.5px;opacity:.85;margin-top:1px;}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.btn{
+  border:1px solid var(--border);background:#fff;color:var(--ink);
+  padding:7px 12px;border-radius:9px;font-weight:600;font-size:12.5px;
+  display:inline-flex;align-items:center;gap:6px;transition:.15s;
+}
+.btn:hover{background:var(--brand-light);border-color:var(--brand);}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.35);}
+.btn.ghost:hover{background:rgba(255,255,255,.25);}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand-dark);}
+.btn.primary:hover{background:var(--brand-dark);}
+.btn.danger{background:#fff;color:var(--i);border-color:var(--i);}
+.btn.danger:hover{background:var(--i-bg);}
+.btn.small{padding:4px 9px;font-size:11.5px;border-radius:7px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+#saveIndicator{font-size:11px;opacity:.8;}
+
+/* ===== Level tabs ===== */
+.levelTabs{display:flex;gap:8px;padding:10px 16px 0;}
+.levelTab{
+  padding:9px 20px;border-radius:12px 12px 0 0;font-weight:700;font-size:14px;
+  background:#dfe3ee;color:var(--muted);border:1px solid var(--border);border-bottom:none;
+  cursor:pointer;
+}
+.levelTab.active{background:var(--card);color:var(--brand-dark);box-shadow:0 -2px 8px rgba(0,0,0,.04);}
+
+main{padding:0 16px 40px;max-width:1500px;margin:0 auto;}
+
+/* ===== Class sub-tabs ===== */
+.classTabsBar{
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+  background:var(--card);border:1px solid var(--border);border-radius:0 0 var(--radius) var(--radius);
+  padding:10px 12px;box-shadow:var(--shadow);margin-bottom:14px;
+}
+.classTab{
+  padding:7px 14px;border-radius:999px;font-weight:600;font-size:12.5px;
+  background:#f3f4fa;color:var(--ink);border:1px solid var(--border);cursor:pointer;
+}
+.classTab.active{background:var(--class-bg,var(--brand));color:#fff;border-color:var(--class-border,var(--brand-dark));}
+.classTab.exigences{background:#fff3e0;border-color:#ffcc80;color:#b45309;}
+.classTab.exigences.active{background:var(--accent);color:#fff;border-color:#e0603c;}
+.classTabsBar .spacer{flex:1;}
+
+/* ===== Horizontal sub-tabs (within a class / section) ===== */
+.subTabBar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.subTab{padding:8px 15px;border-radius:10px;font-weight:700;font-size:12.5px;background:#f3f4fa;color:var(--ink);border:1px solid var(--border);cursor:pointer;white-space:nowrap;}
+.subTab:hover{background:var(--brand-light);}
+.subTab.active{background:var(--class-bg,var(--brand));color:#fff;border-color:var(--class-border,var(--brand-dark));}
+.subTab.small2{padding:6px 11px;font-size:11.5px;}
+
+.plainSectionTitle{font-size:12.5px;margin-bottom:6px;color:var(--muted);cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px;}
+.plainSectionTitle:hover{color:var(--brand-dark);}
+.plainSectionTitle .chev2{display:inline-block;transition:transform .15s;font-size:10px;color:var(--brand);}
+.plainSectionTitle.open .chev2{transform:rotate(90deg);}
+
+/* ===== Accordion ===== */
+.acc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden;}
+.acc-head{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;
+  background:linear-gradient(90deg,#fafbff,#fff);
+}
+.acc-head:hover{background:var(--brand-light);}
+.acc-head .chev{transition:transform .18s;color:var(--brand);font-size:13px;}
+.acc.open > .acc-head .chev{transform:rotate(90deg);}
+.acc-head h3{font-size:14.5px;font-weight:700;flex:1;}
+.acc-head .meta{font-size:11.5px;color:var(--muted);font-weight:500;}
+.acc-body{padding:14px 16px 16px;border-top:1px solid var(--border);}
+.acc:not(.open) > .acc-body{display:none;}
+
+.acc.nested{box-shadow:none;border-color:var(--border);margin-bottom:8px;}
+.acc.nested > .acc-head{padding:9px 12px;background:#f7f8fc;}
+.acc.nested > .acc-head h3{font-size:13px;}
+
+/* ===== Badges (niveaux) ===== */
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:3px 10px;border-radius:7px;font-weight:800;font-size:11.5px;letter-spacing:.3px;
+  min-width:30px;text-align:center;border:1px solid transparent;
+}
+.badge-I{background:var(--i-bg);color:var(--i);border-color:#f8c9c6;}
+.badge-F{background:var(--f-bg);color:var(--f);border-color:#ffd8a8;}
+.badge-S{background:var(--s-bg);color:var(--s);border-color:#b7e2ba;}
+.badge-TB{background:var(--tb-bg);color:var(--tb);border-color:#a9e000;}
+.badge-none{background:#eee;color:#999;}
+
+/* ===== Tables ===== */
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:7px 9px;border-bottom:1px solid var(--border);text-align:left;}
+th{background:#f7f8fc;font-weight:700;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;}
+tbody tr:nth-child(even){background:#f5f6fb;}
+tbody tr:hover{background:#eceaff;}
+.table-wrap{overflow-x:auto;max-height:480px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;}
+
+/* ===== Forms ===== */
+.field{display:flex;flex-direction:column;gap:3px;}
+.field label{font-size:11px;font-weight:700;color:var(--muted);}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  border:1px solid var(--border);border-radius:8px;padding:6px 9px;background:#fff;color:var(--ink);
+}
+input[type=checkbox]{width:16px;height:16px;cursor:pointer;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.grid{display:grid;gap:10px;}
+
+/* ===== Cards / groupes ===== */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;}
+.gcard{border:1px solid var(--border);border-radius:12px;padding:10px;background:#fafbff;}
+.gcard.unassigned{background:#fff6e9;border-color:#ffcc80;}
+.gcard.poolSelected{background:var(--brand-light);border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light);}
+.gcard h4{font-size:12.5px;margin-bottom:6px;color:var(--brand-dark);display:flex;justify-content:space-between;align-items:center;}
+.gcard .member{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12.5px;border-bottom:1px dashed #e7e9f2;}
+.gcard .member:last-child{border-bottom:none;}
+.gcard.dropTarget{cursor:pointer;}
+.gcard.dropTarget:hover{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light);}
+.gcard.newGroupTile{display:flex;align-items:center;justify-content:center;cursor:pointer;border-style:dashed;color:var(--brand-dark);font-weight:700;min-height:60px;}
+.gcard.newGroupTile:hover{background:var(--brand-light);}
+.eleveChip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:7px;cursor:pointer;border:1.5px solid transparent;}
+.eleveChip:hover{background:#eef0fa;}
+.eleveChip.selected{background:var(--brand);color:#fff;border-color:var(--brand-dark);}
+.member .removeMember{border:none;background:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0 3px;}
+.member .removeMember:hover{color:var(--i);}
+
+.figGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;}
+.figThumb{border:2px solid var(--border);border-radius:10px;padding:4px;text-align:center;cursor:pointer;background:#fff;transition:.12s;}
+.figThumb img{width:100%;height:60px;object-fit:cover;border-radius:6px;}
+.figThumb .name{font-size:10.5px;margin-top:3px;font-weight:600;color:var(--muted);word-break:break-word;}
+.figThumb.selected{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light);}
+
+.valTable td.valcell{text-align:center;cursor:pointer;}
+.valcheck{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:transparent;}
+.valcheck.done{background:var(--s);border-color:var(--s);color:#fff;}
+
+.critList{display:flex;flex-direction:column;gap:5px;}
+.critItem{display:flex;align-items:center;gap:8px;}
+.critItem input[type=text]{flex:1;}
+.tierRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.tierEdit{display:flex;align-items:center;gap:5px;background:#f7f8fc;border:1px solid var(--border);border-radius:8px;padding:4px 8px;}
+.tierEdit input{width:46px;text-align:center;}
+
+.descChip{border:1px solid var(--border);border-radius:10px;padding:6px 10px;cursor:pointer;font-size:12px;background:#fff;max-width:230px;}
+.descChip.active-TB{background:var(--tb-bg);border-color:var(--tb);}
+.descChip.active-S{background:var(--s-bg);border-color:var(--s);}
+.descChip.active-F{background:var(--f-bg);border-color:var(--f);}
+.descChip.active-I{background:var(--i-bg);border-color:var(--i);}
+.tierPick{min-width:46px;max-width:52px;text-align:center;font-weight:800;padding:6px 0;}
+
+.studentEvalRow{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid #f0f1f7;flex-wrap:wrap;}
+.studentEvalRow .sname{min-width:160px;font-weight:600;font-size:12.5px;}
+
+/* ===== Modal ===== */
+.modalOverlay{position:fixed;inset:0;background:rgba(20,24,40,.5);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.modalBox{background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modalHead{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--border);}
+.modalHead h3{font-size:16px;}
+.modalBody{padding:16px 18px;}
+.modalClose{border:none;background:none;font-size:20px;color:var(--muted);cursor:pointer;}
+.tabsline{display:flex;gap:6px;margin-bottom:10px;}
+.tabsline button{flex:1;}
+.tabsline button.on{background:var(--brand);color:#fff;border-color:var(--brand-dark);}
+
+.hint{font-size:11.5px;color:var(--muted);background:#f7f8fc;border:1px dashed var(--border);border-radius:8px;padding:8px 10px;}
+.pill{background:var(--brand-light);color:var(--brand-dark);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;}
+.emptyState{padding:30px 10px;text-align:center;color:var(--muted);font-size:13px;}
+.cropWrap{position:relative;display:inline-block;max-width:100%;touch-action:none;}
+.cropWrap canvas{max-width:100%;border:1px solid var(--border);border-radius:8px;cursor:crosshair;}
+.bankGallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px;}
+.bankItem{border:1px solid var(--border);border-radius:10px;padding:6px;text-align:center;background:#fafbff;position:relative;}
+.bankItem img{width:100%;height:65px;object-fit:cover;border-radius:6px;}
+.bankItem .del{position:absolute;top:2px;right:2px;background:#fff;border:1px solid var(--border);border-radius:50%;width:20px;height:20px;font-size:11px;line-height:1;color:var(--i);}
+.recapTable th,.recapTable td{white-space:nowrap;}
+
+.evalResultsTable td,.evalResultsTable th{text-align:center;}
+.evalResultsTable td.nameCell{text-align:left;font-weight:600;}
+.evalResultsTable td.grCell{font-weight:800;color:var(--brand-dark);background:#f7f8fc;}
+.tdTier-I{background:var(--i-bg);color:var(--i);font-weight:700;}
+.tdTier-F{background:var(--f-bg);color:var(--f);font-weight:700;}
+.tdTier-S{background:var(--s-bg);color:var(--s);font-weight:700;}
+.tdTier-TB{background:var(--tb-bg);color:var(--tb);font-weight:700;}
+.ordreBtn{border:1px solid var(--border);background:#fff;border-radius:5px;width:18px;height:18px;line-height:1;font-size:10px;cursor:pointer;padding:0;}
+.ordreBtn:disabled{opacity:.25;cursor:default;}
+
+@media (max-width:820px){
+  body{font-size:13.5px;}
+  header.topbar h1{font-size:15px;}
+  .classTab{font-size:11.5px;padding:6px 10px;}
+  .table-wrap{max-height:360px;}
+}
+footer.app-foot{text-align:center;color:var(--muted);font-size:11px;padding:16px 0 30px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="title">
+    <div class="logo">🤸</div>
+    <div>
+      <h1>EPS Joliot Curie — Acrosport</h1>
+      <div class="sub">Suivi &amp; évaluation des séances en direct</div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <span id="saveIndicator"></span>
+    <span id="syncIndicator" style="font-size:11px;opacity:.9;"></span>
+    <button class="btn ghost" onclick="App.openAide()">❔ Aide</button>
+    <button class="btn ghost" onclick="App.exportData()">⬇️ Exporter</button>
+    <button class="btn ghost" onclick="App.importDataFile()">⬆️ Importer</button>
+    <button class="btn ghost" onclick="App.resetAllConfirm()">🗑️ Réinitialiser</button>
+  </div>
+</header>
+
+<div class="levelTabs" id="levelTabs"></div>
+
+<main id="app"></main>
+
+<footer class="app-foot">Données enregistrées automatiquement sur cet appareil (navigateur). Utilisez « ⬇️ Exporter / ⬆️ Importer » pour transférer vos données entre ordinateur et tablette (voir « ❔ Aide » pour la méthode via OneDrive).</footer>
+
+<input type="file" id="hiddenFileInput" accept="application/json" style="display:none">
+<input type="file" id="hiddenCsvInput" accept=".csv,.tsv,text/csv,text/plain" style="display:none">
+<input type="file" id="hiddenImgInput" accept="image/*" style="display:none">
+<input type="file" id="hiddenFigureInput" accept="image/*" multiple style="display:none">
+
+<div id="modalRoot"></div>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   DONNEES PAR DEFAUT (barèmes / critères issus du cahier des charges)
+   ========================================================================= */
+const TIER_LABELS = ["TB","S","F","I"];
+
+function defaultTiers(tb,s,f,i){
+  return [
+    {l:"TB",min:tb},
+    {l:"S",min:s},
+    {l:"F",min:f},
+    {l:"I",min:i},
+  ];
+}
+function cloneDeep(o){ return JSON.parse(JSON.stringify(o)); }
+
+const LEVEL_DEFAULTS = {
+  "4eme": {
+    label: "4ème",
+    seanceDefaults: {
+      4: {
+        nbFigures: { tiers: defaultTiers(4,2,1,0) },
+        liaisons: { criteres:["Liaisons","Pas de gestes parasites","Concentration"], tiers: defaultTiers(3,2,1,0) }
+      },
+      5: {
+        nbFigures: { tiers: defaultTiers(6,4,2,0) },
+        liaisons: { criteres:["Liaisons","Pas de gestes parasites","Concentration"], tiers: defaultTiers(3,2,1,0) },
+        projetCollectif: { criteres:["Coordination","Entrée et fin immobile","Enchaînement continu"], tiers: defaultTiers(3,2,1,0) }
+      }
+    },
+    gym: {
+      rouladeAvant: { legend:[
+        {l:"TB",text:"3 critères validés : Dans l'axe, Se relève équilibré sans les mains, Pieds et jambes serrés pendant toute la roulade"},
+        {l:"S",text:"2 critères validés"},{l:"F",text:"1 critère validé"},{l:"I",text:"0 critère validé"}
+      ]},
+      rouladeArriere: { legend:[
+        {l:"TB",text:"3 critères validés : Dans l'axe, Se relève équilibré sans poser les genoux au sol, Pieds et jambes serrés pendant toute la roulade"},
+        {l:"S",text:"2 critères validés"},{l:"F",text:"1 critère validé"},{l:"I",text:"0 critère validé"}
+      ]},
+      trepied: { legend:[
+        {l:"TB",text:"Aligné et gainé, montée et descente contrôlées"},
+        {l:"S",text:"Trépied au mur sans aide"},
+        {l:"F",text:"Trépied au mur avec aide"},
+        {l:"I",text:"Pas de renversement"}
+      ]},
+      atr: { legend:[
+        {l:"TB",text:"Départ et retour en fente, aligné et gainé"},
+        {l:"S",text:"ATR au mur sans aide"},
+        {l:"F",text:"ATR au mur avec aide"},
+        {l:"I",text:"Pas de renversement"}
+      ]}
+    }
+  },
+  "3eme": {
+    label: "3ème",
+    seanceDefaults: {
+      4: {
+        nbFigures: { tiers: defaultTiers(2,1,1,0) },
+        liaisons: { criteres:["Liaisons","Pas de gestes parasites","Concentration"], tiers: defaultTiers(3,2,1,0) }
+      },
+      5: {
+        nbFigures: { tiers: defaultTiers(4,3,1,0) },
+        liaisons: { criteres:["Liaisons","Pas de gestes parasites","Concentration"], tiers: defaultTiers(3,2,1,0) },
+        projetCollectif: { criteres:["Coordination","Entrée et fin immobile ORIGINALE","Enchaînement continu"], tiers: defaultTiers(3,2,1,0) }
+      },
+      6: {
+        nbFigures: { tiers: defaultTiers(6,4,2,0) },
+        liaisons: { criteres:["Liaisons DYNAMIQUES","Pas de gestes parasites","Concentration"], tiers: defaultTiers(3,2,1,0) },
+        projetCollectif: { criteres:["Coordination","Entrée et fin immobile ORIGINALE","Enchaînement continu"], tiers: defaultTiers(3,2,1,0) }
+      }
+    },
+    gym: {
+      rouladeAvant: { legend:[
+        {l:"TB",text:"3 critères validés : Dans l'axe, Se relève équilibré sans les mains, Pieds et jambes serrés pendant toute la roulade"},
+        {l:"S",text:"2 critères validés"},{l:"F",text:"1 critère validé"},{l:"I",text:"0 critère validé"}
+      ]},
+      rouladeArriere: { legend:[
+        {l:"TB",text:"3 critères validés : Dans l'axe, Se relève équilibré sans poser les genoux au sol, Pieds et jambes serrés pendant toute la roulade"},
+        {l:"S",text:"2 critères validés"},{l:"F",text:"1 critère validé"},{l:"I",text:"0 critère validé"}
+      ]},
+      trepied: { legend:[
+        {l:"TB",text:"Aligné et gainé, montée et descente contrôlées"},
+        {l:"S",text:"Trépied passager"},
+        {l:"F",text:"Trépied au mur sans aide"},
+        {l:"I",text:"Pas de renversement"}
+      ]},
+      atr: { legend:[
+        {l:"TB",text:"Départ et retour en fente, aligné et gainé"},
+        {l:"S",text:"ATR avec pareur qui retient les jambes"},
+        {l:"F",text:"ATR au mur sans aide"},
+        {l:"I",text:"Pas de renversement"}
+      ]}
+    }
+  }
+};
+
+const SHEET_URL_DEFAULT = "https://docs.google.com/spreadsheets/d/1bQy3r9rG96hfvezFIEFodEATNGVefb2_Gl6ihe1Pcns/edit?gid=0#gid=0";
+
+const APPS_SCRIPT_CODE = [
+  "// Code.gs — synchronisation Acrosport entre appareils",
+  "// 1. script.google.com > Nouveau projet > collez ce code (remplace tout)",
+  "// 2. Déployer > Nouveau déploiement > type \"Application Web\"",
+  "//    Exécuter en tant que : Moi | Qui a accès : Tout le monde",
+  "// 3. Copiez l'URL /exec obtenue dans l'application Acrosport",
+  "",
+  "var FILE_NAME = \"acrosport_sync_data.json\";",
+  "",
+  "function getOrCreateFile_() {",
+  "  var files = DriveApp.getFilesByName(FILE_NAME);",
+  "  if (files.hasNext()) return files.next();",
+  "  return DriveApp.createFile(FILE_NAME, JSON.stringify({lastModified: 0}), MimeType.PLAIN_TEXT);",
+  "}",
+  "",
+  "function doGet(e) {",
+  "  var file = getOrCreateFile_();",
+  "  return ContentService.createTextOutput(file.getBlob().getDataAsString())",
+  "    .setMimeType(ContentService.MimeType.JSON);",
+  "}",
+  "",
+  "function doPost(e) {",
+  "  var file = getOrCreateFile_();",
+  "  var body = e.postData.contents;",
+  "  JSON.parse(body); // validation : refuse un contenu non JSON",
+  "  file.setContent(body);",
+  "  return ContentService.createTextOutput(JSON.stringify({ok: true}))",
+  "    .setMimeType(ContentService.MimeType.JSON);",
+  "}"
+].join("\n");
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+const STORAGE_KEY = "acrosportState_v1";
+
+function freshState(){
+  return {
+    niveauActif: "4eme",
+    sheetUrl: SHEET_URL_DEFAULT,
+    importCache: null,
+    niveaux: {
+      "4eme": { classeActive:null, classes:{}, figuresBank:[], grilleEvalImg:null, figuresTableImg:null, classColors:{} },
+      "3eme": { classeActive:null, classes:{}, figuresBank:[], grilleEvalImg:null, figuresTableImg:null, classColors:{} }
+    },
+    ui: { collapsed:{}, activeSubTab:{} }
+  };
+}
+
+let STATE = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return freshState();
+    const parsed = JSON.parse(raw);
+    if(!parsed.niveaux) return freshState();
+    return parsed;
+  }catch(e){ return freshState(); }
+}
+
+let saveTimer=null;
+function save(){
+  try{
+    STATE.lastModified = Date.now();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+    const el = document.getElementById("saveIndicator");
+    if(el){
+      const t = new Date();
+      el.textContent = "💾 Enregistré " + t.getHours().toString().padStart(2,"0")+":"+t.getMinutes().toString().padStart(2,"0");
+    }
+    scheduleSyncPush();
+  }catch(e){
+    console.error("Erreur de sauvegarde", e);
+    const el = document.getElementById("saveIndicator");
+    if(el) el.textContent = "⚠️ Sauvegarde impossible (espace plein)";
+    alert("⚠️ Impossible d'enregistrer : l'espace de stockage du navigateur est plein (probablement à cause des images importées).\n\nPensez à exporter vos données puis à supprimer quelques figures ou images volumineuses.");
+  }
+}
+
+function uid(prefix){ return (prefix||"id")+"_"+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4); }
+
+/* =========================================================================
+   APP NAMESPACE
+   ========================================================================= */
+const App = {};
+window.App = App;
+
+/* =========================================================================
+   SYNCHRONISATION MULTI-APPAREILS (via Google Apps Script)
+   ========================================================================= */
+const SYNC_URL_KEY = "acrosportSyncUrl";
+const SYNC_URL_DEFAULT = "https://script.google.com/macros/s/AKfycbzMUHYXK-Sqp-AmoENs1Q6ArnytEurJQM5Y4pGarexspph1eDkFbZdI8aSjlQcG4_Mv/exec";
+function getSyncUrl(){
+  try{
+    const stored = localStorage.getItem(SYNC_URL_KEY);
+    return (stored!==null && stored!=="") ? stored : SYNC_URL_DEFAULT;
+  }catch(e){ return SYNC_URL_DEFAULT; }
+}
+App.getSyncUrl = getSyncUrl;
+
+function nowHHMM(){
+  const t = new Date();
+  return t.getHours().toString().padStart(2,"0")+":"+t.getMinutes().toString().padStart(2,"0");
+}
+
+App.updateSyncStatus = function(msg){
+  const el = document.getElementById("syncStatusLine");
+  if(el) el.textContent = msg;
+  const top = document.getElementById("syncIndicator");
+  if(top) top.textContent = msg;
+};
+
+App.setSyncUrl = function(val){
+  const url = normalize(val);
+  try{ localStorage.setItem(SYNC_URL_KEY, url); }catch(e){}
+  if(url){ App.syncPull(true); }
+  else { App.updateSyncStatus("Synchronisation désactivée."); }
+};
+
+let syncPushTimer = null;
+function scheduleSyncPush(){
+  if(!getSyncUrl()) return;
+  clearTimeout(syncPushTimer);
+  syncPushTimer = setTimeout(()=>{ App.syncPush(false); }, 2500);
+}
+
+App.syncPush = function(manual){
+  const url = getSyncUrl();
+  if(!url){ if(manual) alert("Configurez d'abord l'URL de synchronisation dans Exigences > Paramètres."); return; }
+  if(manual) App.updateSyncStatus("🔄 Envoi en cours...");
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(STATE)
+  }).then(r=>r.json()).then(()=>{
+    App.updateSyncStatus("☁️ Envoyé à "+nowHHMM());
+  }).catch(()=>{
+    App.updateSyncStatus("⚠️ Échec de l'envoi (connexion ou URL invalide)");
+  });
+};
+
+function countClasses(st){
+  if(!st || !st.niveaux) return 0;
+  let n = 0;
+  Object.values(st.niveaux).forEach(niv=>{ n += Object.keys((niv&&niv.classes)||{}).length; });
+  return n;
+}
+
+App.syncPull = function(manual){
+  const url = getSyncUrl();
+  if(!url){ if(manual) alert("Configurez d'abord l'URL de synchronisation."); return; }
+  App.updateSyncStatus("🔄 Synchronisation en cours...");
+  fetch(url, { method:"GET", cache:"no-store" })
+    .then(r=>r.json())
+    .then(remote=>{
+      if(!remote || !remote.niveaux){ App.updateSyncStatus("☁️ Aucune donnée distante pour l'instant — envoi de vos données locales."); App.syncPush(false); return; }
+      const remoteTime = remote.lastModified || 0;
+      const localTime = STATE.lastModified || 0;
+      if(remoteTime > localTime){
+        const localCount = countClasses(STATE), remoteCount = countClasses(remote);
+        if(remoteCount < localCount){
+          App.updateSyncStatus("⚠️ Le cloud contient moins de classes ("+remoteCount+") que vos données locales ("+localCount+") — rien n'a été remplacé.");
+          const proceed = confirm("⚠️ Les données reçues du cloud contiennent moins de classes ("+remoteCount+") que vos données locales ("+localCount+").\n\nRemplacer quand même vos données locales par celles du cloud ?\n\nConseil : cliquez sur Annuler, puis sur « ☁️⬆️ Envoyer maintenant » pour plutôt écraser le cloud avec vos données locales (plus complètes).");
+          if(!proceed) return;
+        }
+        STATE = remote;
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }catch(e){}
+        render();
+        App.updateSyncStatus("☁️ Données récupérées à "+nowHHMM());
+      } else {
+        App.updateSyncStatus("☁️ Déjà à jour ("+nowHHMM()+").");
+        App.syncPush(false);
+      }
+    })
+    .catch(()=>{ App.updateSyncStatus("⚠️ Synchronisation impossible (connexion ou URL invalide)"); });
+};
+
+/* ---- generic helpers ---- */
+function niveau(){ return STATE.niveaux[STATE.niveauActif]; }
+function classe(classeId){ return niveau().classes[classeId]; }
+function activeClasse(){ const n=niveau(); return n.classeActive ? n.classes[n.classeActive] : null; }
+
+function normalize(s){ return (s||"").toString().trim(); }
+function stripAccents(s){ return normalize(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+
+const NIVEAU_DIGIT = { "4eme":"4", "3eme":"3" };
+function classeAppartientNiveau(nomClasse, niveauKey){
+  const digit = NIVEAU_DIGIT[niveauKey];
+  if(!digit) return true;
+  const s = stripAccents(nomClasse).replace(/^[°\s]+/,"");
+  return s.startsWith(digit);
+}
+
+function sortStudents(list){
+  return [...list].sort((a,b)=>{
+    const an = stripAccents(a.nom||a.nomPrenom), bn = stripAccents(b.nom||b.nomPrenom);
+    if(an!==bn) return an<bn?-1:1;
+    const ap = stripAccents(a.prenom), bp = stripAccents(b.prenom);
+    return ap<bp?-1:(ap>bp?1:0);
+  });
+}
+
+function tierColorClass(l){ return l? "badge-"+l : "badge-none"; }
+function badgeHtml(l,extra){
+  if(!l) return '<span class="badge badge-none">—</span>';
+  return '<span class="badge '+tierColorClass(l)+'">'+l+(extra?(" "+extra):"")+'</span>';
+}
+
+function computeTierFromCount(tiers,count){
+  const sorted = [...tiers].sort((a,b)=>b.min-a.min);
+  for(const t of sorted){ if(count>=t.min) return t.l; }
+  return sorted[sorted.length-1].l;
+}
+
+/* =========================================================================
+   COLLAPSE (accordion) STATE
+   ========================================================================= */
+function isOpen(key,defaultOpen){
+  if(STATE.ui.collapsed.hasOwnProperty(key)) return !STATE.ui.collapsed[key];
+  return defaultOpen!==false;
+}
+App.toggleAcc = function(key,defaultOpen){
+  const open = isOpen(key,defaultOpen);
+  STATE.ui.collapsed[key] = open; // true => collapsed
+  save();
+  render();
+};
+
+/* =========================================================================
+   SOUS-ONGLETS HORIZONTAUX (navigation par clic, pas en accordéon vertical)
+   ========================================================================= */
+function getActiveSubTab(key,defaultVal){
+  STATE.ui.activeSubTab = STATE.ui.activeSubTab || {};
+  return STATE.ui.activeSubTab.hasOwnProperty(key) ? STATE.ui.activeSubTab[key] : defaultVal;
+}
+App.setActiveSubTab = function(key,val){
+  STATE.ui.activeSubTab = STATE.ui.activeSubTab || {};
+  STATE.ui.activeSubTab[key] = val;
+  save();
+  render();
+};
+
+/* Titre de section cliquable pour afficher/masquer son contenu (hors cartes accordéon) */
+function sectionTitle(key,label,defaultOpen){
+  const open = isOpen(key, defaultOpen!==false);
+  return `<h4 class="plainSectionTitle ${open?'open':''}" onclick="App.toggleAcc('${key}',${defaultOpen!==false})"><span class="chev2">▶</span> ${label}</h4>`;
+}
+function sectionOpen(key,defaultOpen){ return isOpen(key, defaultOpen!==false); }
+
+/* =========================================================================
+   RENDER: LEVEL TABS
+   ========================================================================= */
+function renderLevelTabs(){
+  const el = document.getElementById("levelTabs");
+  el.innerHTML = Object.keys(LEVEL_DEFAULTS).map(k=>{
+    const active = STATE.niveauActif===k ? "active":"";
+    return `<div class="levelTab ${active}" onclick="App.setNiveau('${k}')">${LEVEL_DEFAULTS[k].label}</div>`;
+  }).join("");
+}
+App.setNiveau = function(k){
+  STATE.niveauActif = k;
+  save();
+  render();
+};
+
+/* =========================================================================
+   RENDER: MAIN
+   ========================================================================= */
+const CLASS_PALETTE = [
+  {bg:"#5b4ddb", border:"#4336b8"}, // violet (défaut)
+  {bg:"#0e9f8f", border:"#0b7d71"}, // teal
+  {bg:"#e0603c", border:"#bf4a29"}, // orange brûlé
+  {bg:"#2563eb", border:"#1d4ed8"}, // bleu
+  {bg:"#c2328f", border:"#9c2372"}, // magenta
+  {bg:"#7c3aed", border:"#6425c4"}, // violet clair
+  {bg:"#0891b2", border:"#0e7490"}, // cyan
+  {bg:"#b45309", border:"#92400e"}, // ambre foncé
+  {bg:"#4f46e5", border:"#4338ca"}, // indigo
+  {bg:"#db2777", border:"#be185d"}  // rose
+];
+function classColor(classIds,cid){
+  const n = niveau();
+  n.classColors = n.classColors || {};
+  const override = n.classColors[cid];
+  if(override) return { bg: override, border: override };
+  const idx = classIds.indexOf(cid);
+  return idx>=0 ? CLASS_PALETTE[idx % CLASS_PALETTE.length] : null;
+}
+
+App.setClassColor = function(cid, hex){
+  const n = niveau();
+  n.classColors = n.classColors || {};
+  n.classColors[cid] = hex;
+  save(); render();
+};
+
+function render(){
+  renderLevelTabs();
+  const app = document.getElementById("app");
+  const n = niveau();
+  const classIds = Object.keys(n.classes);
+
+  let tabsHtml = `<div class="classTabsBar">`;
+  for(const cid of classIds){
+    const c = n.classes[cid];
+    const active = n.classeActive===cid ? "active":"";
+    const col = classColor(classIds,cid);
+    tabsHtml += `<div class="classTab ${active}" style="--class-bg:${col.bg};--class-border:${col.border};" onclick="App.setClasse('${cid}')">${c.nom} <span style="opacity:.6;font-weight:500;">(${c.eleves.length})</span>
+      <input type="color" value="${col.bg}" onclick="event.stopPropagation()" onchange="event.stopPropagation();App.setClassColor('${cid}',this.value)" title="Changer la couleur de cette classe" style="width:14px;height:14px;padding:0;border:none;border-radius:50%;vertical-align:middle;margin-left:5px;cursor:pointer;background:none;"></div>`;
+  }
+  tabsHtml += `<button class="btn small primary" onclick="App.openImportModal()">+ Importer élèves / classe</button>`;
+  tabsHtml += `<div class="spacer"></div>`;
+  const exigActive = n.classeActive==="__exigences__" ? "active":"";
+  tabsHtml += `<div class="classTab exigences ${exigActive}" onclick="App.setClasse('__exigences__')">⭐ Exigences ${LEVEL_DEFAULTS[STATE.niveauActif].label}</div>`;
+  tabsHtml += `</div>`;
+
+  let body = "";
+  if(n.classeActive==="__exigences__"){
+    body = renderExigences();
+  } else if(n.classeActive && n.classes[n.classeActive]){
+    const col = classColor(classIds,n.classeActive);
+    body = `<div style="--class-bg:${col.bg};--class-border:${col.border};">${renderClasse(n.classes[n.classeActive])}</div>`;
+  } else {
+    body = `<div class="acc open"><div class="acc-body"><div class="emptyState">Aucune classe sélectionnée.<br>Cliquez sur « + Importer élèves / classe » pour commencer.</div></div></div>`;
+  }
+
+  app.innerHTML = tabsHtml + body;
+
+  if(n.classeActive==="__exigences__"){
+    if(cropState && cropState.niveauKey===STATE.niveauActif){ renderCropZone(); }
+    else if(n.figuresTableImg){ startCrop(n.figuresTableImg); }
+    else { cropState = null; }
+  }
+}
+
+App.setClasse = function(cid){
+  niveau().classeActive = cid;
+  save();
+  render();
+};
+
+/* =========================================================================
+   IMPORT ELEVES (coller depuis Google Sheet / CSV)
+   ========================================================================= */
+let importPreview = null; // {rows:[{nom,prenom,classe,sexe}], classes:[...]}
+let importDebounce = null;
+let importShowOthers = false;
+
+function openModal(html){
+  document.getElementById("modalRoot").innerHTML =
+    `<div class="modalOverlay" onclick="if(event.target===this) App.closeModal()"><div class="modalBox">${html}</div></div>`;
+}
+App.closeModal = function(){ document.getElementById("modalRoot").innerHTML=""; };
+
+App.openImportModal = function(tab){
+  if(!tab) tab = STATE.importCache ? "direct" : "auto";
+  importPreview = (tab==="direct" && STATE.importCache) ? STATE.importCache : null;
+  importShowOthers = false;
+
+  const html = `
+    <div class="modalHead"><h3>Importer des élèves</h3><button class="modalClose" onclick="App.closeModal()">✕</button></div>
+    <div class="modalBody">
+      <div class="tabsline">
+        <button class="btn small ${tab==='auto'?'on':''}" onclick="App.openImportModal('auto')">🔄 Depuis le Google Sheet</button>
+        ${STATE.importCache ? `<button class="btn small ${tab==='direct'?'on':''}" onclick="App.openImportModal('direct')">✅ Sélection directe des classes</button>` : ``}
+        <button class="btn small ${tab==='paste'?'on':''}" onclick="App.openImportModal('paste')">📋 Coller manuellement</button>
+        <button class="btn small ${tab==='csv'?'on':''}" onclick="App.openImportModal('csv')">📁 Fichier CSV</button>
+      </div>
+      ${tab==='auto' ? `
+        <div id="autoLoadZone"><div class="hint">⏳ Chargement des données depuis le Google Sheet en cours...</div></div>
+      ` : tab==='direct' ? `
+        <div class="hint">Données déjà chargées : ${STATE.importCache.rows.length} élève(s), ${STATE.importCache.classes.length} classe(s) — mise à jour le ${STATE.importCache.updatedAt||'—'}.<br>
+        <a href="#" onclick="App.openImportModal('auto');return false;">↻ Recharger automatiquement depuis le Google Sheet</a></div>
+      ` : tab==='paste' ? `
+        <div class="hint">1. Ouvrez votre <a href="#" onclick="window.open(App.getSheetUrl(),'_blank');return false;">Google Sheet des élèves</a>.<br>
+        2. Sélectionnez les colonnes <b>Nom, Prénom, Classe, Sexe</b> (avec les en-têtes) puis copiez (Ctrl+C).<br>
+        3. Collez ci-dessous (Ctrl+V) — les classes détectées s'affichent automatiquement.</div>
+        <div class="field" style="margin-top:10px;">
+          <textarea id="pasteArea" rows="8" style="width:100%;" placeholder="Collez ici les données copiées depuis le Google Sheet..." oninput="App.onPasteInput()"></textarea>
+        </div>
+      ` : `
+        <div class="hint">Importez un export .csv ou .tsv de votre tableau d'élèves (colonnes Nom, Prénom, Classe, Sexe).</div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn primary" onclick="document.getElementById('hiddenCsvInput').click()">Choisir un fichier...</button>
+        </div>
+      `}
+      <div id="importPreviewZone"></div>
+    </div>`;
+  openModal(html);
+  if(tab==="direct") renderImportPreview();
+  if(tab==="auto") App.chargerDepuisGoogleSheet();
+};
+
+App.getSheetUrl = function(){ return STATE.sheetUrl || SHEET_URL_DEFAULT; };
+
+function extractSheetIdAndGid(url){
+  const idMatch = (url||"").match(/\/d\/([a-zA-Z0-9-_]+)/);
+  const gidMatch = (url||"").match(/[?#&]gid=(\d+)/);
+  return { id: idMatch ? idMatch[1] : null, gid: gidMatch ? gidMatch[1] : "0" };
+}
+
+let gvizCounter = 0;
+function loadGoogleSheetViaGviz(sheetUrl){
+  return new Promise((resolve,reject)=>{
+    const { id, gid } = extractSheetIdAndGid(sheetUrl);
+    if(!id){ reject(new Error("Lien Google Sheet invalide (identifiant introuvable).")); return; }
+    const cbName = "gvizCb_"+(gvizCounter++)+"_"+Date.now();
+    const script = document.createElement("script");
+    const timer = setTimeout(()=>{ cleanup(); reject(new Error("Délai dépassé. Vérifiez votre connexion internet, et que le Google Sheet est partagé en lecture (« Toute personne disposant du lien peut consulter »).")); }, 12000);
+    function cleanup(){
+      clearTimeout(timer);
+      try{ delete window[cbName]; }catch(e){ window[cbName]=undefined; }
+      if(script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cbName] = function(json){
+      cleanup();
+      try{
+        const table = json.table;
+        const headers = table.cols.map(c=>c.label||"");
+        const rows = table.rows.map(r=>(r.c||[]).map(cell=>cell ? (cell.f!==undefined && cell.f!==null ? cell.f : (cell.v!==undefined && cell.v!==null ? cell.v : "")) : ""));
+        resolve({headers, rows});
+      }catch(err){ reject(new Error("Réponse inattendue du Google Sheet.")); }
+    };
+    script.onerror = function(){ cleanup(); reject(new Error("Impossible de contacter Google Sheets (hors connexion, lien invalide, ou feuille non partagée en lecture).")); };
+    script.src = "https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:json;responseHandler:"+cbName+"&gid="+gid;
+    document.body.appendChild(script);
+  });
+}
+
+function gvizTableToTSV(headers, rows){
+  const esc = v => String(v==null?"":v).replace(/\t/g," ").replace(/\r?\n/g," ");
+  const lines = [headers.map(esc).join("\t")];
+  for(const r of rows) lines.push(r.map(esc).join("\t"));
+  return lines.join("\n");
+}
+
+App.chargerDepuisGoogleSheet = async function(){
+  const zone = document.getElementById("autoLoadZone");
+  try{
+    const { headers, rows } = await loadGoogleSheetViaGviz(App.getSheetUrl());
+    const tsv = gvizTableToTSV(headers, rows);
+    parseImportText(tsv);
+    if(zone) zone.innerHTML = `<div class="hint" style="border-color:#b7e2ba;background:var(--s-bg);color:var(--s);">✅ Données chargées automatiquement depuis le Google Sheet.</div>`;
+  }catch(err){
+    if(zone){
+      zone.innerHTML = `<div class="hint" style="border-color:#f8c9c6;background:var(--i-bg);color:var(--i);">⚠️ ${err.message}</div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn small" onclick="App.chargerDepuisGoogleSheet()">↻ Réessayer</button>
+          <button class="btn small" onclick="App.openImportModal('paste')">📋 Coller manuellement à la place</button>
+          <button class="btn small" onclick="App.openImportModal('csv')">📁 Importer un fichier CSV</button>
+        </div>`;
+    }
+  }
+};
+
+document.getElementById("hiddenCsvInput").addEventListener("change", function(e){
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = function(){ parseImportText(reader.result); };
+  reader.readAsText(f,"UTF-8");
+  e.target.value="";
+});
+
+App.onPasteInput = function(){
+  clearTimeout(importDebounce);
+  importDebounce = setTimeout(()=>{
+    const el = document.getElementById("pasteArea");
+    if(el && normalize(el.value).length>0) parseImportText(el.value);
+  }, 350);
+};
+
+function splitLine(line){
+  if(line.indexOf("\t")>=0) return line.split("\t");
+  return line.split(",");
+}
+
+function parseImportText(txt){
+  const lines = txt.split(/\r\n|\n|\r/).map(l=>l).filter(l=>normalize(l).length>0);
+  if(lines.length===0){ alert("Aucune donnée détectée."); return; }
+  const header = splitLine(lines[0]).map(h=>stripAccents(h));
+  let idxNom=-1, idxPrenom=-1, idxClasse=-1, idxSexe=-1, idxNomPrenom=-1;
+  header.forEach((h,i)=>{
+    if(/^nom$/.test(h)) idxNom=i;
+    else if(/^prenom$/.test(h)) idxPrenom=i;
+    else if(/nom.*prenom|prenom.*nom/.test(h)) idxNomPrenom=i;
+    else if(/^classe$/.test(h)) idxClasse=i;
+    else if(/^sexe|^genre/.test(h)) idxSexe=i;
+  });
+  let dataLines = lines;
+  let hasHeader = (idxNom>=0||idxPrenom>=0||idxClasse>=0||idxSexe>=0||idxNomPrenom>=0);
+  if(hasHeader) dataLines = lines.slice(1);
+  else { idxNom=0; idxPrenom=1; idxClasse=2; idxSexe=3; }
+
+  const rows=[];
+  const classesSet = new Set();
+  for(const line of dataLines){
+    const cols = splitLine(line).map(c=>normalize(c));
+    if(cols.every(c=>c==="")) continue;
+    let nom="", prenom="";
+    if(idxNomPrenom>=0){
+      const full = cols[idxNomPrenom]||"";
+      const parts = full.split(" ");
+      nom = parts[0]||full; prenom = parts.slice(1).join(" ");
+    } else {
+      nom = idxNom>=0 ? (cols[idxNom]||"") : "";
+      prenom = idxPrenom>=0 ? (cols[idxPrenom]||"") : "";
+    }
+    const cl = idxClasse>=0 ? (cols[idxClasse]||"") : "";
+    const sexe = idxSexe>=0 ? (cols[idxSexe]||"") : "";
+    if(!nom && !prenom) continue;
+    if(cl) classesSet.add(cl);
+    rows.push({nom,prenom,nomPrenom:(nom+" "+prenom).trim(),classe:cl,sexe});
+  }
+  if(rows.length===0){ alert("Impossible de détecter des lignes élèves. Vérifiez le format (colonnes Nom / Prénom / Classe / Sexe)."); return; }
+  importPreview = { rows, classes: [...classesSet].sort() };
+  STATE.importCache = { rows, classes: importPreview.classes, updatedAt: new Date().toLocaleString("fr-FR") };
+  save();
+  renderImportPreview();
+}
+
+App.toggleAllImportClasses = function(checked){
+  document.querySelectorAll(".importClasseChk").forEach(chk=>{ chk.checked = checked; });
+};
+
+App.toggleShowOtherNiveaux = function(){
+  importShowOthers = !importShowOthers;
+  renderImportPreview();
+};
+
+function renderImportPreview(){
+  const zone = document.getElementById("importPreviewZone");
+  if(!importPreview){ zone.innerHTML=""; return; }
+  const { rows, classes } = importPreview;
+  const dejaImportees = new Set(Object.values(niveau().classes).map(c=>c.nom));
+  const classesNiveau = classes.filter(c=>classeAppartientNiveau(c,STATE.niveauActif));
+  const classesAutres = classes.filter(c=>!classeAppartientNiveau(c,STATE.niveauActif));
+  let html = `<div style="margin-top:14px;">
+    <h4 style="font-size:13px;margin-bottom:6px;">${rows.length} élève(s) détecté(s) — cochez la/les classe(s) de ${LEVEL_DEFAULTS[STATE.niveauActif].label} à importer :</h4>`;
+  if(classes.length===0){
+    html += `<div class="hint">Aucune colonne « Classe » détectée : tous les élèves seront importés dans une classe nommée ci-dessous.</div>
+      <div class="field" style="margin:10px 0;"><label>Nom de la classe</label><input type="text" id="manualClasseName" value="Classe 1" style="width:160px;"></div>`;
+  } else {
+    html += `<div class="row" style="margin-bottom:6px;">
+      <button class="btn small" onclick="App.toggleAllImportClasses(true)">Tout sélectionner</button>
+      <button class="btn small" onclick="App.toggleAllImportClasses(false)">Tout désélectionner</button>
+    </div>
+    <div class="row" style="margin-bottom:10px;">`;
+    const classesAffichees = classesNiveau.length>0 ? classesNiveau : classes;
+    for(const c of classesAffichees){
+      const count = rows.filter(r=>r.classe===c).length;
+      const already = dejaImportees.has(c);
+      html += `<label style="display:flex;align-items:center;gap:5px;background:${already?'#eef7ef':'#f3f4fa'};border:1px solid ${already?'#b7e2ba':'var(--border)'};border-radius:8px;padding:5px 10px;">
+        <input type="checkbox" class="importClasseChk" value="${c}" ${already?'':'checked'}> <b>${c}</b> <span style="color:var(--muted);">(${count})</span>${already?' <span class="pill" style="background:var(--s-bg);color:var(--s);" title="Si coché : ajoute les nouveaux élèves et retire ceux absents de cette liste (sans toucher aux notes déjà saisies)">déjà importée — cocher pour mettre à jour</span>':''}</label>`;
+    }
+    if(classesNiveau.length>0 && classesAutres.length>0){
+      html += `</div><div class="hint" style="margin-bottom:10px;">${classesAutres.length} autre(s) classe(s) détectée(s) ne semblent pas être du niveau ${LEVEL_DEFAULTS[STATE.niveauActif].label} (${classesAutres.join(", ")}) et sont masquées.
+        <a href="#" onclick="App.toggleShowOtherNiveaux();return false;">${importShowOthers?'Masquer':'Afficher quand même'}</a></div>`;
+      if(importShowOthers){
+        html += `<div class="row" style="margin-bottom:10px;">`;
+        for(const c of classesAutres){
+          const count = rows.filter(r=>r.classe===c).length;
+          const already = dejaImportees.has(c);
+          html += `<label style="display:flex;align-items:center;gap:5px;background:#f3f4fa;border:1px dashed var(--border);border-radius:8px;padding:5px 10px;">
+            <input type="checkbox" class="importClasseChk" value="${c}"> ${c} <span style="color:var(--muted);">(${count})</span></label>`;
+        }
+        html += `</div>`;
+      }
+    } else {
+      html += `</div>`;
+    }
+  }
+  html += `
+    <div class="table-wrap" style="max-height:220px;margin-bottom:10px;">
+      <table><thead><tr><th>Nom Prénom</th><th>Classe</th><th>Sexe</th></tr></thead><tbody>
+      ${rows.slice(0,200).map(r=>`<tr><td>${r.nomPrenom}</td><td>${r.classe||"—"}</td><td>${r.sexe||"—"}</td></tr>`).join("")}
+      </tbody></table>
+    </div>
+    <button class="btn primary" onclick="App.confirmImport()">✅ Importer la sélection</button>
+  </div>`;
+  zone.innerHTML = html;
+}
+
+App.confirmImport = function(){
+  if(!importPreview) return;
+  const n = niveau();
+  let selectedClasses;
+  if(importPreview.classes.length===0){
+    const name = normalize(document.getElementById("manualClasseName").value) || "Classe 1";
+    selectedClasses = [name];
+    importPreview.rows.forEach(r=>r.classe = name);
+  } else {
+    selectedClasses = [...document.querySelectorAll(".importClasseChk:checked")].map(c=>c.value);
+  }
+  if(selectedClasses.length===0){ alert("Sélectionnez au moins une classe."); return; }
+
+  // Prépare les ajouts/retraits sans encore rien modifier, pour pouvoir résumer et confirmer les retraits.
+  const plan = []; // {clName, clId, isNew, target, toAdd:[...], toRemove:[...]}
+  for(const clName of selectedClasses){
+    const clId = Object.keys(n.classes).find(id=>n.classes[id].nom===clName);
+    const isNew = !clId;
+    const target = isNew ? newClasseObj(clName) : n.classes[clId];
+    const studentsForClass = importPreview.rows.filter(r=>r.classe===clName);
+    const importNames = studentsForClass.map(s=>stripAccents(s.nomPrenom));
+    const toAdd = studentsForClass.filter(s=>!target.eleves.some(e=>stripAccents(e.nomPrenom)===stripAccents(s.nomPrenom)));
+    const toRemove = isNew ? [] : target.eleves.filter(e=>!importNames.includes(stripAccents(e.nomPrenom)));
+    plan.push({ clName, clId: clId||uid("cl"), isNew, target, toAdd, toRemove });
+  }
+
+  const removals = plan.filter(p=>p.toRemove.length>0);
+  if(removals.length>0){
+    const msg = "⚠️ Ces élèves ne figurent plus dans les données importées et seront retirés de leur classe (leurs éventuelles notes déjà saisies resteront inchangées pour les autres élèves) :\n\n"
+      + removals.map(p=>`${p.clName} : ${p.toRemove.map(e=>e.nomPrenom).join(", ")}`).join("\n")
+      + "\n\nContinuer ?";
+    if(!confirm(msg)) return;
+  }
+
+  let firstNewId = null;
+  for(const p of plan){
+    if(p.isNew) n.classes[p.clId] = p.target;
+    if(!firstNewId) firstNewId = p.clId;
+    for(const s of p.toAdd){
+      p.target.eleves.push({ id: uid("el"), nom:s.nom, prenom:s.prenom, nomPrenom:s.nomPrenom, sexe:s.sexe||"" });
+    }
+    if(p.toRemove.length>0){
+      const removeIds = new Set(p.toRemove.map(e=>e.id));
+      p.target.eleves = p.target.eleves.filter(e=>!removeIds.has(e.id));
+    }
+  }
+  n.classeActive = firstNewId;
+  importPreview = null;
+  App.closeModal();
+  save();
+  render();
+};
+
+function newClasseObj(nom){
+  return {
+    nom,
+    eleves: [],
+    seances: [],
+    gym: initGymResults()
+  };
+}
+function initGymResults(){
+  return {
+    rouladeAvant:{ resultats:{} },
+    rouladeArriere:{ resultats:{} },
+    trepied:{ resultats:{} },
+    atr:{ resultats:{} }
+  };
+}
+
+/* =========================================================================
+   GESTION DES CLASSES (ajout manuel, suppression)
+   ========================================================================= */
+App.ajouterClasseManuelle = function(){
+  const nom = normalize(prompt("Nom de la nouvelle classe (ex: 4B) :"));
+  if(!nom) return;
+  const n = niveau();
+  const exists = Object.values(n.classes).some(c=>c.nom===nom);
+  if(exists){ alert("Cette classe existe déjà."); return; }
+  const id = uid("cl");
+  n.classes[id] = newClasseObj(nom);
+  n.classeActive = id;
+  save(); render();
+};
+
+App.supprimerClasse = function(cid){
+  const n = niveau();
+  if(!confirm("Supprimer définitivement la classe « "+n.classes[cid].nom+" » et toutes ses données (élèves, séances, notes) ?")) return;
+  delete n.classes[cid];
+  if(n.classeActive===cid) n.classeActive=null;
+  save(); render();
+};
+
+App.ajouterEleveManuel = function(cid){
+  const c = classe(cid);
+  const nom = normalize(prompt("Nom de l'élève :")); if(!nom) return;
+  const prenom = normalize(prompt("Prénom de l'élève :")||"");
+  const sexe = normalize(prompt("Sexe (F/M) :")||"");
+  c.eleves.push({id:uid("el"), nom, prenom, nomPrenom:(nom+" "+prenom).trim(), sexe});
+  save(); render();
+};
+
+App.supprimerEleve = function(cid,eid){
+  const c = classe(cid);
+  if(!confirm("Retirer cet élève de la classe ?")) return;
+  c.eleves = c.eleves.filter(e=>e.id!==eid);
+  save(); render();
+};
+
+/* =========================================================================
+   RENDER CLASSE (élèves / séances / gym / récap)
+   ========================================================================= */
+function renderClasse(c){
+  const cid = Object.keys(niveau().classes).find(id=>niveau().classes[id]===c);
+  const tabKey = "classSection_"+cid;
+  const active = getActiveSubTab(tabKey,"eleves");
+
+  const sections = [
+    {key:"eleves", label:"👥 Élèves", count:c.eleves.length},
+    {key:"seances", label:"📅 Séances", count:c.seances.length},
+    {key:"gym", label:"🤸 Éléments gymniques"},
+    {key:"recap", label:"📊 Récap classe"}
+  ];
+
+  let html = `<div class="subTabBar">`;
+  for(const sec of sections){
+    html += `<button class="subTab ${active===sec.key?'active':''}" onclick="App.setActiveSubTab('${tabKey}','${sec.key}')">${sec.label}${sec.count!==undefined?` <span style="opacity:.75;">(${sec.count})</span>`:``}</button>`;
+  }
+  html += `</div>`;
+
+  html += `<div class="acc open"><div class="acc-body">`;
+  if(active==="seances") html += renderSeancesPanel(cid,c);
+  else if(active==="gym") html += renderGymPanel(cid,c);
+  else if(active==="recap") html += renderRecapPanel(cid,c);
+  else html += renderElevesPanel(cid,c);
+  html += `</div></div>`;
+
+  return html;
+}
+
+function renderElevesPanel(cid,c){
+  const sorted = sortStudents(c.eleves);
+  return `
+      <div class="row" style="margin-bottom:10px;">
+        <input type="text" placeholder="🔎 Rechercher un élève..." style="min-width:220px;" oninput="App.filterEleves(this.value)">
+        <button class="btn small" onclick="App.ajouterEleveManuel('${cid}')">+ Ajouter un élève</button>
+        <button class="btn small danger" onclick="App.supprimerClasse('${cid}')">🗑️ Supprimer la classe</button>
+      </div>
+      <div class="table-wrap" style="max-height:none;overflow-y:visible;">
+        <table id="elevesTable"><thead><tr><th>Nom Prénom</th><th>Sexe</th><th></th></tr></thead>
+        <tbody>
+        ${sorted.map(e=>`<tr data-name="${stripAccents(e.nomPrenom)}"><td>${e.nomPrenom}</td><td>${e.sexe||"—"}</td>
+          <td><button class="btn small danger" onclick="App.supprimerEleve('${cid}','${e.id}')">✕</button></td></tr>`).join("")}
+        </tbody></table>
+      </div>`;
+}
+
+function renderSeancesPanel(cid,c){
+  let html = `<div class="row" style="margin-bottom:12px;">
+        <button class="btn primary" onclick="App.creerSeance('${cid}')">+ Nouvelle séance</button>
+      </div>`;
+  if(c.seances.length===0){
+    html += `<div class="emptyState">Aucune séance créée.</div>`;
+    return html;
+  }
+  const tabKey = "seanceActive_"+cid;
+  let activeId = getActiveSubTab(tabKey,null);
+  if(!activeId || !c.seances.some(s=>s.id===activeId)){
+    activeId = c.seances[c.seances.length-1].id;
+  }
+  html += `<div class="subTabBar">`;
+  for(const s of c.seances){
+    const dateParts = (s.date||"").split("-");
+    const dateShort = dateParts.length===3 ? `${dateParts[2]}/${dateParts[1]}` : "";
+    html += `<button class="subTab small2 ${activeId===s.id?'active':''}" style="display:flex;flex-direction:column;align-items:center;line-height:1.25;" onclick="App.setActiveSubTab('${tabKey}','${s.id}')">
+      <span>Séance ${s.numero}</span>
+      <span style="font-size:10px;font-weight:600;opacity:.85;">${dateShort}</span>
+    </button>`;
+  }
+  html += `</div>`;
+  const s = c.seances.find(sv=>sv.id===activeId);
+  html += renderSeanceContent(cid,c,s);
+  return html;
+}
+
+App.filterEleves = function(val){
+  const q = stripAccents(val);
+  document.querySelectorAll("#elevesTable tbody tr").forEach(tr=>{
+    tr.style.display = tr.dataset.name.indexOf(q)>=0 ? "" : "none";
+  });
+};
+
+/* =========================================================================
+   SEANCES
+   ========================================================================= */
+function nextSeanceNumero(c){
+  return c.seances.length>0 ? Math.max(...c.seances.map(s=>s.numero))+1 : 1;
+}
+
+App.creerSeance = function(cid){
+  const c = classe(cid);
+  const numero = nextSeanceNumero(c);
+  const lvl = LEVEL_DEFAULTS[STATE.niveauActif];
+  const seance = {
+    id: uid("se"),
+    numero,
+    date: new Date().toISOString().slice(0,10),
+    absents: [],
+    dispenses: [],
+    groupes: [],
+    figuresAssignees: [],
+    figuresParGroupe: {},
+    granulariteGroupe: {},
+    implication: {},
+    attitude: {},
+    validations: {},
+    gymCriteriaUsed: false
+  };
+
+  // config d'évaluation par défaut selon le niveau et le numéro de séance
+  if(numero>=4){
+    const defs = lvl.seanceDefaults;
+    const key = defs[numero] ? numero : Math.max(...Object.keys(defs).map(Number));
+    seance.evalConfig = cloneDeep(defs[key]);
+  }
+
+  // groupes par défaut : reconduits depuis la séance précédente à partir de la séance 5 (modifiable),
+  // sinon construits manuellement par clic (séances 1 à 4)
+  if(numero>=5){
+    const presents = c.eleves.map(e=>e.id);
+    const prev = [...c.seances].reverse().find(s=>s.numero<numero);
+    if(prev){
+      seance.groupes = cloneDeep(prev.groupes).map(g=>({id:uid("gr"), membres:g.membres.filter(id=>presents.includes(id))})).filter(g=>g.membres.length>0);
+    }
+  }
+
+  c.seances.push(seance);
+  c.seances.sort((a,b)=>a.numero-b.numero);
+  save(); render();
+};
+
+App.supprimerSeance = function(cid,sid){
+  const c = classe(cid);
+  if(!confirm("Supprimer cette séance et toutes ses évaluations ?")) return;
+  c.seances = c.seances.filter(s=>s.id!==sid);
+  save(); render();
+};
+
+App.majDateSeance = function(cid,sid,val){
+  const s = findSeance(cid,sid); s.date = val; save();
+};
+function findSeance(cid,sid){ return classe(cid).seances.find(s=>s.id===sid); }
+
+App.toggleAbsent = function(cid,sid,eid,type){
+  const s = findSeance(cid,sid);
+  const arr = type==="absent" ? s.absents : s.dispenses;
+  const idx = arr.indexOf(eid);
+  if(idx>=0) arr.splice(idx,1); else arr.push(eid);
+  // retire des groupes si absent/dispensé
+  if(arr===s.absents || arr===s.dispenses){
+    if(s.absents.includes(eid) || s.dispenses.includes(eid)){
+      s.groupes.forEach(g=>{ g.membres = g.membres.filter(id=>id!==eid); });
+    }
+  }
+  save(); render();
+};
+
+let groupSelection = null; // {sid, eid} - élève sélectionné en attente d'un clic sur un groupe cible
+
+App.clickEleveGroupe = function(cid,sid,eid){
+  if(groupSelection && groupSelection.sid===sid && groupSelection.eid===eid){
+    groupSelection = null;
+    render();
+    return;
+  }
+  const s = findSeance(cid,sid);
+  if(s.numero<=3 && groupSelection && groupSelection.sid===sid){
+    // séances 1-3 : cliquer 2 élèves forme automatiquement un binôme
+    const first = groupSelection.eid;
+    groupSelection = null;
+    const ng = { id: uid("gr"), membres:[first,eid] };
+    s.groupes.forEach(g=>{ g.membres = g.membres.filter(m=>m!==first && m!==eid); });
+    s.groupes = s.groupes.filter(g=>g.membres.length>0);
+    s.groupes.push(ng);
+    save(); render();
+    return;
+  }
+  groupSelection = { sid, eid };
+  render();
+};
+
+App.clickGroupeCible = function(cid,sid,groupeId){
+  if(!groupSelection || groupSelection.sid!==sid) return;
+  App.deplacerEleve(cid,sid,groupSelection.eid,groupeId);
+  groupSelection = null;
+};
+
+App.nouveauGroupeAvecSelection = function(cid,sid){
+  if(!groupSelection || groupSelection.sid!==sid){
+    alert("Cliquez d'abord sur un élève, puis sur « + Nouveau groupe ».");
+    return;
+  }
+  App.deplacerEleve(cid,sid,groupSelection.eid,"__new__");
+  groupSelection = null;
+};
+
+App.retirerDuGroupe = function(cid,sid,eid){
+  const s = findSeance(cid,sid);
+  s.groupes.forEach(g=>{ g.membres = g.membres.filter(id=>id!==eid); });
+  s.groupes = s.groupes.filter(g=>g.membres.length>0);
+  if(groupSelection && groupSelection.sid===sid && groupSelection.eid===eid) groupSelection = null;
+  save(); render();
+};
+
+App.supprimerGroupe = function(cid,sid,groupeId){
+  const s = findSeance(cid,sid);
+  s.groupes = s.groupes.filter(g=>g.id!==groupeId);
+  save(); render();
+};
+
+App.deplacerEleve = function(cid,sid,eid,groupeKey){
+  const s = findSeance(cid,sid);
+  s.groupes.forEach(g=>{ g.membres = g.membres.filter(id=>id!==eid); });
+  if(groupeKey==="__new__"){
+    s.groupes.push({id:uid("gr"), membres:[eid]});
+  } else if(groupeKey!=="__none__"){
+    const g = s.groupes.find(g=>g.id===groupeKey);
+    if(g) g.membres.push(eid);
+  }
+  s.groupes = s.groupes.filter(g=>g.membres.length>0);
+  save(); render();
+};
+
+App.toggleFigureAssignee = function(cid,sid,figId){
+  const s = findSeance(cid,sid);
+  const i = s.figuresAssignees.indexOf(figId);
+  if(i>=0) s.figuresAssignees.splice(i,1); else s.figuresAssignees.push(figId);
+  save(); render();
+};
+
+App.toggleFigureGroupe = function(cid,sid,groupeId,figId){
+  const s = findSeance(cid,sid);
+  s.figuresParGroupe = s.figuresParGroupe || {};
+  const arr = s.figuresParGroupe[groupeId] = s.figuresParGroupe[groupeId] || [];
+  const i = arr.indexOf(figId);
+  if(i>=0) arr.splice(i,1); else arr.push(figId);
+  save(); render();
+};
+
+App.deplacerOrdre = function(cid,sid,groupeId,eid,direction){
+  const s = findSeance(cid,sid);
+  const g = s.groupes.find(x=>x.id===groupeId);
+  if(!g) return;
+  const idx = g.membres.indexOf(eid);
+  const newIdx = idx+direction;
+  if(idx<0 || newIdx<0 || newIdx>=g.membres.length) return;
+  const tmp = g.membres[idx]; g.membres[idx] = g.membres[newIdx]; g.membres[newIdx] = tmp;
+  save(); render();
+};
+
+App.toggleValidation = function(cid,sid,groupeId,figId){
+  const s = findSeance(cid,sid);
+  s.validations[groupeId] = s.validations[groupeId]||{};
+  s.validations[groupeId][figId] = !s.validations[groupeId][figId];
+  save(); render();
+};
+
+function countValidations(s,groupeId){
+  const v = s.validations[groupeId]||{};
+  return Object.values(v).filter(Boolean).length;
+}
+
+App.editCritereTexte = function(cid,sid,type,idx,val){
+  const s = findSeance(cid,sid);
+  s.evalConfig[type].criteres[idx] = val;
+  save();
+};
+App.editTierMin = function(cid,sid,type,tierIdx,val){
+  const s = findSeance(cid,sid);
+  s.evalConfig[type].tiers[tierIdx].min = parseInt(val)||0;
+  save();
+};
+App.addCritere = function(cid,sid,type){
+  const s = findSeance(cid,sid);
+  s.evalConfig[type].criteres.push("Nouveau critère");
+  save(); render();
+};
+App.removeCritere = function(cid,sid,type,idx){
+  const s = findSeance(cid,sid);
+  s.evalConfig[type].criteres.splice(idx,1);
+  save(); render();
+};
+
+function groupName(g,idx){ return "Groupe "+(idx+1); }
+function groupLabel(c,g,idx){
+  const names = g.membres.map(mid=>{
+    const e = c.eleves.find(x=>x.id===mid);
+    return e ? e.nomPrenom : null;
+  }).filter(Boolean);
+  return `<b>${groupName(g,idx)}</b>` + (names.length ? `<br><span style="font-weight:400;color:var(--muted);font-size:11px;">${names.join(", ")}</span>` : "");
+}
+
+function renderSeanceContent(cid,c,s){
+  const present = c.eleves.filter(e=>!s.absents.includes(e.id) && !s.dispenses.includes(e.id));
+  const assigned = new Set(s.groupes.flatMap(g=>g.membres));
+  const unassigned = present.filter(e=>!assigned.has(e.id));
+
+  let phase = s.numero<=3 ? "pratique" : "evaluation";
+  const viewKey = "seanceView_"+s.id;
+  const view = getActiveSubTab(viewKey,"live");
+
+  let html = `<div class="seanceContent">
+      <div class="row" style="margin-bottom:12px;align-items:center;">
+        <h3 style="font-size:15px;">Séance ${s.numero} ${phase==='evaluation'?'· Évaluation':'· Pratique'}</h3>
+        <div class="field"><label>Date</label><input type="date" value="${s.date}" onchange="App.majDateSeance('${cid}','${s.id}',this.value)"></div>
+        <button class="btn small danger" onclick="App.supprimerSeance('${cid}','${s.id}')">🗑️ Supprimer la séance</button>
+      </div>
+      <div class="subTabBar">
+        <button class="subTab ${view==='live'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','live')">📋 Séance</button>
+        <button class="subTab ${view==='config'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','config')">⚙️ Paramétrage</button>
+      </div>`;
+
+  if(view==='config'){
+    html += renderFiguresConfig(cid,c,s);
+    if(phase==='evaluation') html += renderEvaluationConfig(cid,c,s);
+    else html += `<div class="hint" style="margin-top:10px;">Les grilles d'évaluation (figures/liaisons/projet) apparaissent à partir de la séance 4.</div>`;
+    html += `</div>`;
+    return html;
+  }
+
+  const kPresence = "presence_"+s.id, kGroupes = "groupesBinomes_"+s.id, kAPlacer = "aPlacer_"+s.id, kConstitues = "groupesConstitues_"+s.id;
+
+  html += sectionTitle(kPresence,"PRÉSENCE",true);
+  if(sectionOpen(kPresence,true)){
+    html += `<div class="cards" style="margin-bottom:14px;">
+        ${sortStudents(c.eleves).map(e=>{
+          const isAbs = s.absents.includes(e.id), isDisp = s.dispenses.includes(e.id);
+          return `<div class="gcard" style="padding:6px 10px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="${isAbs||isDisp?'opacity:.45;text-decoration:line-through;':''}">${e.nomPrenom}</span>
+            <span style="display:flex;gap:4px;">
+              <label class="pill" style="background:${isAbs?'var(--i-bg)':'#eee'};color:${isAbs?'var(--i)':'#888'};cursor:pointer;">
+                <input type="checkbox" style="display:none;" ${isAbs?'checked':''} onchange="App.toggleAbsent('${cid}','${s.id}','${e.id}','absent')">Abs</label>
+              <label class="pill" style="background:${isDisp?'var(--f-bg)':'#eee'};color:${isDisp?'var(--f)':'#888'};cursor:pointer;">
+                <input type="checkbox" style="display:none;" ${isDisp?'checked':''} onchange="App.toggleAbsent('${cid}','${s.id}','${e.id}','dispense')">Disp</label>
+            </span>
+          </div>`;
+        }).join("")}
+      </div>`;
+  }
+
+  html += sectionTitle(kGroupes,"GROUPES / BINÔMES",true);
+  if(sectionOpen(kGroupes,true)){
+    html += `<div class="hint" style="margin-bottom:10px;">
+        ${groupSelection && groupSelection.sid===s.id
+          ? (s.numero<=3
+              ? `👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un <b>autre élève</b> pour former le binôme automatiquement, ou sur un groupe existant pour l'y placer (ex : dernier élève en surnombre). Cliquez à nouveau sur son nom pour annuler.`
+              : `👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un groupe (ou « + Nouveau groupe ») pour l'y placer. Cliquez à nouveau sur son nom pour annuler.`)
+          : (s.numero<=3
+              ? `Cliquez sur 2 élèves pour former automatiquement un binôme. Si le nombre d'élèves est impair, placez le dernier manuellement sur un binôme existant.`
+              : `Cliquez sur un élève puis sur le groupe souhaité pour l'y associer. Entièrement manuel : aucune génération automatique.`)}
+      </div>`;
+  }
+
+  if(unassigned.length>0){
+    html += sectionTitle(kAPlacer,`👥 À PLACER (${unassigned.length})`,true);
+    if(sectionOpen(kAPlacer,true)){
+      html += `<div class="cards" style="margin-bottom:16px;">
+        ${unassigned.map(e=>{
+          const isSel = groupSelection && groupSelection.sid===s.id && groupSelection.eid===e.id;
+          return `<div class="gcard ${isSel?'poolSelected':''}" style="padding:6px 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="App.clickEleveGroupe('${cid}','${s.id}','${e.id}')">
+            <span style="${isSel?'font-weight:700;color:var(--brand-dark);':''}">${e.nomPrenom}</span>
+          </div>`;
+        }).join("")}
+      </div>`;
+    }
+  }
+
+  html += sectionTitle(kConstitues,"GROUPES CONSTITUÉS",true);
+  if(sectionOpen(kConstitues,true)){
+    html += `<div class="cards">
+        ${s.groupes.map((g,idx)=>`<div class="gcard dropTarget" onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')">
+          <h4>${groupName(g,idx)} <span style="display:flex;align-items:center;gap:6px;"><span style="color:var(--muted);font-weight:500;">${g.membres.length}</span><button class="btn small danger" style="padding:1px 6px;" onclick="event.stopPropagation();App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button></span></h4>
+          ${g.membres.map(mid=>{
+            const e = c.eleves.find(x=>x.id===mid); if(!e) return "";
+            const isSel = groupSelection && groupSelection.sid===s.id && groupSelection.eid===mid;
+            return `<div class="member"><span class="eleveChip ${isSel?'selected':''}" onclick="event.stopPropagation();App.clickEleveGroupe('${cid}','${s.id}','${mid}')">${e.nomPrenom}</span><button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></div>`;
+          }).join("")}
+          ${g.membres.length===0?'<div style="font-size:11px;color:var(--muted);">Vide — cliquez un élève puis ce groupe.</div>':''}
+        </div>`).join("")}
+        <div class="gcard newGroupTile" onclick="App.nouveauGroupeAvecSelection('${cid}','${s.id}')">+ Nouveau groupe</div>
+      </div>`;
+  }
+
+  html += `
+      ${phase==='evaluation' ? renderUnifiedEvalTable(cid,c,s) : renderFiguresLive(cid,c,s)}
+      ${phase==='evaluation' ? renderEvalResultsTable(cid,c,s) : renderNotesSeanceTable(cid,c,s,phase)}
+    </div>`;
+  return html;
+}
+
+function renderFiguresConfig(cid,c,s){
+  const bank = niveau().figuresBank;
+  if(bank.length===0){
+    return `<h4 style="font-size:12.5px;margin:14px 0 6px;color:var(--muted);">FIGURES</h4>
+      <div class="hint">Aucune figure dans la banque. Ajoutez des figures depuis l'onglet « ⭐ Exigences » pour pouvoir les assigner et les valider en direct.</div>`;
+  }
+
+  if(s.numero<=3){
+    return `<h4 style="font-size:12.5px;margin:14px 0 6px;color:var(--muted);">FIGURES — sélectionnez celles travaillées cette séance</h4>
+      <div class="figGrid" style="margin-bottom:10px;">
+      ${bank.map(f=>`<div class="figThumb ${s.figuresAssignees.includes(f.id)?'selected':''}" onclick="App.toggleFigureAssignee('${cid}','${s.id}','${f.id}')">
+        <img src="${f.img}"><div class="name">${f.nom}</div>
+      </div>`).join("")}
+      </div>`;
+  }
+
+  // Séances 4+ : chaque groupe choisit ses propres figures (préparation)
+  let html = `<h4 style="font-size:12.5px;margin:14px 0 6px;color:var(--muted);">FIGURES — choisissez les figures présentées par chaque groupe</h4>`;
+  if(s.groupes.length===0){
+    return html + `<div class="hint">Créez d'abord des groupes dans l'onglet « 📋 Séance » pour pouvoir leur attribuer des figures.</div>`;
+  }
+  s.figuresParGroupe = s.figuresParGroupe || {};
+  html += s.groupes.filter(g=>g.membres.length>0).map((g,idx)=>{
+    const assignedIds = s.figuresParGroupe[g.id] || [];
+    const key = "figGrp_"+s.id+"_"+g.id;
+    const open = isOpen(key, assignedIds.length===0);
+    return `<div class="acc nested ${open?'open':''}">
+      <div class="acc-head" onclick="App.toggleAcc('${key}',${assignedIds.length===0})">
+        <span class="chev">▶</span><h3>${groupName(g,idx)}</h3>
+        <span class="meta">${assignedIds.length} figure(s) choisie(s)</span>
+      </div>
+      <div class="acc-body">
+        <div class="figGrid">
+        ${bank.map(f=>`<div class="figThumb ${assignedIds.includes(f.id)?'selected':''}" onclick="App.toggleFigureGroupe('${cid}','${s.id}','${g.id}','${f.id}')">
+          <img src="${f.img}"><div class="name">${f.nom}</div>
+        </div>`).join("")}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  return html;
+}
+
+const FIGURE_TIER_LEGEND = [
+  {l:"TB", text:"Figure montée, tenue 3 secondes, démontée en toute sécurité"},
+  {l:"S", text:"Manque 1 critère"},
+  {l:"F", text:"Manque 2 critères"},
+  {l:"I", text:"Chute ou aucun critère validé"}
+];
+
+App.cycleFigureRating = function(cid,sid,groupId,figId){
+  const s = findSeance(cid,sid);
+  s.validations[groupId] = s.validations[groupId] || {};
+  const cur = s.validations[groupId][figId] || null;
+  const idx = TIER_CYCLE.indexOf(cur);
+  s.validations[groupId][figId] = TIER_CYCLE[(idx+1)%TIER_CYCLE.length];
+  save(); render();
+};
+
+App.cycleStudentField = function(cid,sid,field,eid){
+  const s = findSeance(cid,sid);
+  s[field] = s[field] || {};
+  const cur = s[field][eid] || null;
+  const idx = TIER_CYCLE.indexOf(cur);
+  s[field][eid] = TIER_CYCLE[(idx+1)%TIER_CYCLE.length];
+  save(); render();
+};
+
+function renderFiguresLive(cid,c,s){
+  const bank = niveau().figuresBank;
+  if(bank.length===0) return "";
+
+  const assignedFigs = bank.filter(f=>s.figuresAssignees.includes(f.id));
+  if(assignedFigs.length===0 || s.groupes.length===0){
+    return `<h4 style="font-size:12.5px;margin:14px 0 6px;color:var(--muted);">FIGURES</h4>
+      <div class="hint">Choisissez les figures de cette séance dans l'onglet « ⚙️ Paramétrage ».</div>`;
+  }
+  const key = "figuresLive_"+s.id;
+  let html = sectionTitle(key,"FIGURES — cliquez pour noter en direct",true);
+  if(!sectionOpen(key,true)) return html;
+  const imgW = Math.max(32, Math.min(80, Math.floor(820/Math.max(assignedFigs.length,1))));
+  const imgH = Math.round(imgW*0.75);
+  html += `<div class="hint" style="margin-bottom:8px;">${FIGURE_TIER_LEGEND.map(o=>`<b>${o.l}</b> — ${o.text}`).join(" · ")}</div>
+    <div class="table-wrap valTable" style="max-height:none;overflow-y:visible;"><table><thead><tr><th>Groupe</th>
+    ${assignedFigs.map(f=>`<th><img src="${f.img}" style="width:${imgW}px;height:${imgH}px;object-fit:cover;border-radius:6px;display:block;margin:0 auto 3px;">${f.nom}</th>`).join("")}<th>Évaluées</th></tr></thead><tbody>
+    ${s.groupes.map((g,idx)=>`<tr><td style="max-width:130px;white-space:normal;">${groupLabel(c,g,idx)}</td>
+      ${assignedFigs.map(f=>{
+        const cur = (s.validations[g.id]||{})[f.id] || null;
+        return `<td class="${cur?'tdTier-'+cur:''}" style="cursor:pointer;" onclick="App.cycleFigureRating('${cid}','${s.id}','${g.id}','${f.id}')" title="Cliquer pour changer (TB → S → F → I → vide)">${cur||'—'}</td>`;
+      }).join("")}
+      <td><b>${countValidations(s,g.id)}</b></td>
+    </tr>`).join("")}
+    </tbody></table></div>`;
+  return html;
+}
+
+/* ---- Unité de notation : groupe entier, ou duos au sein du groupe ---- */
+function gradingUnits(s,g){
+  const mode = s.granulariteGroupe && s.granulariteGroupe[g.id];
+  if(mode!=="duo" || g.membres.length<=2){
+    return [{ key:g.id, membres:g.membres }];
+  }
+  const units = [];
+  let i=0, di=0;
+  for(i=0; i+1<g.membres.length; i+=2){
+    units.push({ key:g.id+"__d"+di, membres:[g.membres[i],g.membres[i+1]] });
+    di++;
+  }
+  if(i<g.membres.length){
+    if(units.length>0) units[units.length-1].membres.push(g.membres[i]);
+    else units.push({ key:g.id+"__d0", membres:[g.membres[i]] });
+  }
+  return units;
+}
+function unitLabel(c,u){
+  return u.membres.map(mid=>{ const e=c.eleves.find(x=>x.id===mid); return e?e.nomPrenom:null; }).filter(Boolean).join(" & ");
+}
+function gradingUnitKeyForStudent(s,eid){
+  const g = s.groupes.find(g=>g.membres.includes(eid));
+  if(!g) return null;
+  const u = gradingUnits(s,g).find(u=>u.membres.includes(eid));
+  return u ? u.key : g.id;
+}
+
+App.toggleGranularite = function(cid,sid,groupeId){
+  const s = findSeance(cid,sid);
+  s.granulariteGroupe = s.granulariteGroupe || {};
+  s.granulariteGroupe[groupeId] = (s.granulariteGroupe[groupeId]==="duo") ? "groupe" : "duo";
+  save(); render();
+};
+
+const TIER_CYCLE = [null,"TB","S","F","I"];
+App.cycleTierManuel = function(cid,sid,type,key){
+  const s = findSeance(cid,sid);
+  s.tierManuel = s.tierManuel || {};
+  s.tierManuel[type] = s.tierManuel[type] || {};
+  const cur = s.tierManuel[type][key] || null;
+  const idx = TIER_CYCLE.indexOf(cur);
+  s.tierManuel[type][key] = TIER_CYCLE[(idx+1)%TIER_CYCLE.length];
+  save(); render();
+};
+
+function renderUnifiedEvalTable(cid,c,s){
+  if(!s.evalConfig) return "";
+  const bank = niveau().figuresBank;
+  const groupesAvecMembres = s.groupes.filter(g=>g.membres.length>0);
+  const key = "figuresEval_"+s.id;
+  let html = sectionTitle(key,"FIGURES & ÉVALUATION — cliquez pour valider / noter",true);
+  if(!sectionOpen(key,true)) return html;
+  if(groupesAvecMembres.length===0){
+    return html + `<div class="hint">Créez des groupes ci-dessus pour voir apparaître l'évaluation.</div>`;
+  }
+  s.figuresParGroupe = s.figuresParGroupe || {};
+
+  const domains = [{key:"liaisons", label:"Liaisons"}];
+  if(s.evalConfig.projetCollectif) domains.push({key:"projetCollectif", label:"Projet collectif"});
+
+  groupesAvecMembres.forEach((g,gidx)=>{
+    const groupFigIds = s.figuresParGroupe[g.id] || [];
+    const figColumns = bank.filter(f=>groupFigIds.includes(f.id));
+    const units = gradingUnits(s,g);
+
+    const assign = (s.figureDuoAssign && s.figureDuoAssign[g.id]) || {};
+    const multiUnit = units.length>1;
+
+    html += `<div style="margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+        ${g.membres.length>2 ? `<button class="btn small" style="padding:2px 6px;font-size:10px;" onclick="App.toggleGranularite('${cid}','${s.id}','${g.id}')">${units.length>1?'👥 Groupe entier':'👫 Par duo'}</button>` : ""}
+        ${multiUnit ? `<span>Glissez une figure sur un binôme pour la lui attribuer en propre (double-clic sur la figure pour revenir à « commune »).</span>` : ""}
+      </div>`;
+
+    if(figColumns.length===0){
+      html += `<div class="hint" style="margin-bottom:8px;">Aucune figure choisie pour ce groupe — sélectionnez-les dans l'onglet « ⚙️ Paramétrage ».</div>`;
+    }
+
+    const imgW = Math.max(32, Math.min(80, Math.floor(760/Math.max(figColumns.length,1))));
+    const imgH = Math.round(imgW*0.75);
+    html += `<div class="table-wrap evalResultsTable" style="max-height:none;overflow-y:visible;"><table><thead><tr>
+      <th style="font-size:22px;font-weight:800;color:var(--brand-dark);">${gidx+1}</th>
+      ${figColumns.map(f=>`<th draggable="true"
+          ondragstart="event.dataTransfer.setData('text/plain','${f.id}')"
+          ondragover="event.preventDefault()"
+          ondrop="App.handleFigDrop(event,'${cid}','${s.id}','${g.id}','${f.id}')"
+          ondblclick="App.clearFigureAssign('${cid}','${s.id}','${g.id}','${f.id}')"
+          style="cursor:grab;" title="Glisser pour réordonner, déposer sur un binôme pour l'attribuer. Double-clic : revenir à « commune ».">
+          <img src="${f.img}" style="width:${imgW}px;height:${imgH}px;object-fit:cover;border-radius:6px;display:block;margin:0 auto 3px;pointer-events:none;">${f.nom}
+        </th>`).join("")}
+      <th>Figures</th>
+      ${domains.map(d=>`<th style="white-space:normal;min-width:150px;max-width:180px;">${d.label}<br><span style="font-weight:400;font-size:9.5px;color:var(--muted);text-transform:none;letter-spacing:0;display:block;text-align:left;">${(s.evalConfig[d.key].criteres||[]).join("<br>")}</span></th>`).join("")}
+    </tr></thead><tbody>`;
+
+    units.forEach(u=>{
+      html += `<tr>`;
+      html += `<td class="nameCell" style="white-space:normal;max-width:150px;" ondragover="event.preventDefault()" ondrop="App.handleDuoDrop(event,'${cid}','${s.id}','${g.id}','${u.key}')">${unitLabel(c,u)}</td>`;
+      figColumns.forEach(f=>{
+        const assignedTo = assign[f.id];
+        if(assignedTo && assignedTo!==u.key){
+          html += `<td style="background:#f7f7f7;"></td>`;
+          return;
+        }
+        const done = (s.validations[u.key]||{})[f.id];
+        html += `<td class="valcell" onclick="App.toggleValidation('${cid}','${s.id}','${u.key}','${f.id}')"><span class="valcheck ${done?'done':''}">✓</span></td>`;
+      });
+      const count = countValidations(s,u.key);
+      const figTier = computeTierFromCount(s.evalConfig.nbFigures.tiers,count);
+      html += `<td>${badgeHtml(figTier)}<div style="font-size:9.5px;color:var(--muted);">${count}</div></td>`;
+      domains.forEach(d=>{
+        const cur = (s.tierManuel && s.tierManuel[d.key] && s.tierManuel[d.key][u.key]) || null;
+        html += `<td class="${cur?'tdTier-'+cur:''}" style="cursor:pointer;" onclick="App.cycleTierManuel('${cid}','${s.id}','${d.key}','${u.key}')" title="Cliquer pour changer (TB → S → F → I → vide)">${cur||'—'}</td>`;
+      });
+      html += `</tr>`;
+    });
+    html += `</tbody></table></div></div>`;
+  });
+  return html;
+}
+
+App.handleFigDrop = function(ev,cid,sid,groupeId,targetFigId){
+  ev.preventDefault();
+  const figId = ev.dataTransfer.getData("text/plain");
+  if(!figId || figId===targetFigId) return;
+  const s = findSeance(cid,sid);
+  const arr = s.figuresParGroupe && s.figuresParGroupe[groupeId];
+  if(!arr) return;
+  const from = arr.indexOf(figId), to = arr.indexOf(targetFigId);
+  if(from<0 || to<0) return;
+  arr.splice(from,1);
+  arr.splice(to,0,figId);
+  save(); render();
+};
+
+App.handleDuoDrop = function(ev,cid,sid,groupeId,unitKey){
+  ev.preventDefault();
+  const figId = ev.dataTransfer.getData("text/plain");
+  if(!figId) return;
+  const s = findSeance(cid,sid);
+  s.figureDuoAssign = s.figureDuoAssign || {};
+  s.figureDuoAssign[groupeId] = s.figureDuoAssign[groupeId] || {};
+  s.figureDuoAssign[groupeId][figId] = unitKey;
+  save(); render();
+};
+
+App.clearFigureAssign = function(cid,sid,groupeId,figId){
+  const s = findSeance(cid,sid);
+  if(s.figureDuoAssign && s.figureDuoAssign[groupeId]) delete s.figureDuoAssign[groupeId][figId];
+  save(); render();
+};
+
+function renderEvaluationConfig(cid,c,s){
+  if(!s.evalConfig) return "";
+  let html = `<h4 style="font-size:12.5px;margin:14px 0 6px;color:var(--muted);">BARÈME — Nombre de figures</h4>
+    <div class="tierRow" style="margin-bottom:16px;">${s.evalConfig.nbFigures.tiers.map((t,ti)=>`<div class="tierEdit">${t.l} ≥ <input type="number" value="${t.min}" min="0" onchange="App.editTierMin('${cid}','${s.id}','nbFigures',${ti},this.value)"></div>`).join("")}</div>`;
+
+  html += renderCritereTexteBlock(cid,s,"liaisons","Critères — Liaisons (ne pas marcher)");
+  if(s.evalConfig.projetCollectif){
+    html += renderCritereTexteBlock(cid,s,"projetCollectif","Critères — Projet collectif");
+  }
+  return html;
+}
+
+function renderCritereTexteBlock(cid,s,type,title){
+  const cfg = s.evalConfig[type];
+  return `<h4 style="font-size:12.5px;margin:14px 0 6px;color:var(--muted);">${title}</h4>
+    <div class="hint" style="margin-bottom:8px;">Ces critères sont informatifs (affichés aux élèves) — la note TB/S/F/I se donne ensuite d'un clic dans l'onglet « 📋 Séance ».</div>
+    <div class="critList" style="margin-bottom:8px;">
+    ${cfg.criteres.map((crit,ci)=>`<div class="critItem">
+      <input type="text" value="${crit.replace(/"/g,'&quot;')}" onchange="App.editCritereTexte('${cid}','${s.id}','${type}',${ci},this.value)">
+      <button class="btn small danger" onclick="App.removeCritere('${cid}','${s.id}','${type}',${ci})">✕</button>
+    </div>`).join("")}
+    </div>
+    <button class="btn small" onclick="App.addCritere('${cid}','${s.id}','${type}')">+ Critère</button>`;
+}
+
+function seanceGroupTier(s,groupeId,type){
+  if(type==="nbFigures"){
+    return computeTierFromCount(s.evalConfig.nbFigures.tiers, countValidations(s,groupeId));
+  }
+  return (s.tierManuel && s.tierManuel[type] && s.tierManuel[type][groupeId]) || null;
+}
+
+const TIER_SCORE = {TB:18,S:13,F:9,I:4};
+function globalTierForStudent(s,eid){
+  if(!s.evalConfig) return null;
+  const key = gradingUnitKeyForStudent(s,eid);
+  if(!key) return null;
+  const types = ["nbFigures","liaisons"]; if(s.evalConfig.projetCollectif) types.push("projetCollectif");
+  const tiers = types.map(t=>seanceGroupTier(s,key,t)).filter(Boolean);
+  if(tiers.length===0) return null;
+  const avg = tiers.reduce((a,t)=>a+TIER_SCORE[t],0)/tiers.length;
+  if(avg>=16) return "TB"; if(avg>=11) return "S"; if(avg>=6) return "F"; return "I";
+}
+
+function renderNotesSeanceTable(cid,c,s,phase){
+  const sorted = sortStudents(c.eleves);
+  const key = "notesSeance_"+s.id;
+  let html = sectionTitle(key,`NOTES — SÉANCE ${s.numero}`,true);
+  if(!sectionOpen(key,true)) return html;
+  s.implication = s.implication || {};
+  s.attitude = s.attitude || {};
+  html += `<div class="table-wrap" style="max-height:none;overflow-y:visible;overflow-x:auto;"><table style="width:auto;"><thead><tr>
+    <th>Élève</th><th>Statut</th><th>Figures validées</th><th>Implication</th><th>Attitude</th>
+  </tr></thead><tbody>
+    ${sorted.map(e=>{
+      const isAbs = s.absents.includes(e.id), isDisp = s.dispenses.includes(e.id);
+      const statut = isAbs ? "Absent" : isDisp ? "Dispensé" : "Présent";
+      const indispo = isAbs || isDisp;
+      let figCount = "—";
+      if(!indispo){
+        const g = s.groupes.find(gr=>gr.membres.includes(e.id));
+        figCount = g ? String(countValidations(s,g.id)) : "0";
+      }
+      const impl = s.implication[e.id] || null;
+      const att = s.attitude[e.id] || null;
+      const cellTier = (cur,field)=> indispo
+        ? `<td>—</td>`
+        : `<td class="${cur?'tdTier-'+cur:''}" style="cursor:pointer;white-space:nowrap;" onclick="App.cycleStudentField('${cid}','${s.id}','${field}','${e.id}')" title="Cliquer pour changer (TB → S → F → I → vide)">${cur||'—'}</td>`;
+      return `<tr><td style="white-space:nowrap;">${e.nomPrenom}</td><td style="white-space:nowrap;">${statut}</td><td style="white-space:nowrap;text-align:center;">${figCount}</td>${cellTier(impl,'implication')}${cellTier(att,'attitude')}</tr>`;
+    }).join("")}
+    </tbody></table></div>`;
+  return html;
+}
+
+function tierDescription(domainKey, cfg, tierLabel){
+  if(!cfg) return "";
+  const t = cfg.tiers.find(x=>x.l===tierLabel);
+  if(!t) return "";
+  if(domainKey==="nbFigures") return `${t.min}+ figure(s) validée(s)`;
+  let desc = `${t.min} critère(s) présent(s)`;
+  if(tierLabel==="TB" && cfg.criteres && cfg.criteres.length){
+    desc += `<br><span style="font-weight:400;font-size:10px;">${cfg.criteres.join(" · ")}</span>`;
+  }
+  return desc;
+}
+
+function renderEvalResultsTable(cid,c,s){
+  const domains = [{key:"nbFigures", label:"Figures"}, {key:"liaisons", label:"Liaisons"}];
+  if(s.evalConfig.projetCollectif) domains.push({key:"projetCollectif", label:"Projet collectif"});
+
+  const key = "resultats_"+s.id;
+  let html = sectionTitle(key,`RÉSULTATS — SÉANCE ${s.numero}`,true);
+  if(!sectionOpen(key,true)) return html;
+  const groupesAvecMembres = s.groupes.filter(g=>g.membres.length>0);
+  if(groupesAvecMembres.length===0){
+    return html + `<div class="hint">Créez des groupes ci-dessus pour voir apparaître les résultats.</div>`;
+  }
+
+  const sortKey = "resultSort_"+s.id;
+  const sortMode = getActiveSubTab(sortKey,"groupe");
+  html += `<div class="row" style="margin-bottom:8px;">
+    <button class="btn small ${sortMode==='groupe'?'primary':''}" onclick="App.setActiveSubTab('${sortKey}','groupe')">Par groupe</button>
+    <button class="btn small ${sortMode==='alpha'?'primary':''}" onclick="App.setActiveSubTab('${sortKey}','alpha')">Alphabétique</button>
+  </div>`;
+
+  html += `<div class="table-wrap evalResultsTable" style="max-height:none;overflow-y:visible;"><table><thead><tr>
+    <th>GR</th><th>N°</th><th>Nom</th>
+    ${domains.map(d=>`<th>${d.label}</th>`).join("")}
+  </tr></thead><tbody>`;
+
+  if(sortMode==="alpha"){
+    const rows = [];
+    groupesAvecMembres.forEach((g,gidx)=>{
+      g.membres.forEach((mid,mi)=>{
+        const e = c.eleves.find(x=>x.id===mid);
+        if(e) rows.push({e,g,gidx,mi});
+      });
+    });
+    sortStudents(rows.map(r=>r.e)).forEach(sortedE=>{
+      const r = rows.find(r=>r.e.id===sortedE.id);
+      const key = gradingUnitKeyForStudent(s,r.e.id);
+      html += `<tr><td class="grCell">${r.gidx+1}</td><td>${r.mi+1}</td><td class="nameCell">${r.e.nomPrenom}</td>`;
+      domains.forEach(d=>{
+        const t = seanceGroupTier(s,key,d.key);
+        html += `<td class="${t?'tdTier-'+t:''}">${t||'—'}</td>`;
+      });
+      html += `</tr>`;
+    });
+  } else {
+    groupesAvecMembres.forEach((g,gidx)=>{
+      g.membres.forEach((mid,mi)=>{
+        const e = c.eleves.find(x=>x.id===mid);
+        if(!e) return;
+        const key = gradingUnitKeyForStudent(s,mid);
+        html += `<tr>`;
+        if(mi===0) html += `<td class="grCell" rowspan="${g.membres.length}">${gidx+1}</td>`;
+        html += `<td>
+          <button class="ordreBtn" onclick="App.deplacerOrdre('${cid}','${s.id}','${g.id}','${mid}',-1)" ${mi===0?'disabled':''} title="Monter">▲</button>
+          ${mi+1}
+          <button class="ordreBtn" onclick="App.deplacerOrdre('${cid}','${s.id}','${g.id}','${mid}',1)" ${mi===g.membres.length-1?'disabled':''} title="Descendre">▼</button>
+        </td>
+        <td class="nameCell">${e.nomPrenom}</td>`;
+        domains.forEach(d=>{
+          const t = seanceGroupTier(s,key,d.key);
+          html += `<td class="${t?'tdTier-'+t:''}">${t||'—'}</td>`;
+        });
+        html += `</tr>`;
+      });
+    });
+  }
+  html += `</tbody></table></div>`;
+
+  html += `<div class="table-wrap evalResultsTable" style="max-height:none;overflow-y:visible;margin-top:8px;"><table><tbody>`;
+  ["TB","S","F","I"].forEach(lvl=>{
+    html += `<tr><td colspan="3" style="border:none;text-align:right;font-weight:700;color:var(--muted);">${lvl}</td>
+      ${domains.map(d=>`<td class="tdTier-${lvl}" style="font-size:11px;">${d.key==="nbFigures" ? tierDescription(d.key, s.evalConfig[d.key], lvl) : ""}</td>`).join("")}
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  return html;
+}
+
+/* =========================================================================
+   ELEMENTS GYMNIQUES
+   ========================================================================= */
+function renderGymPanel(cid,c){
+  const gymDefs = LEVEL_DEFAULTS[STATE.niveauActif].gym;
+  const sorted = sortStudents(c.eleves);
+
+  const agresList = [
+    {key:"rouladeAvant", label:"Roulade avant"},
+    {key:"rouladeArriere", label:"Roulade arrière"},
+    {key:"trepied", label: STATE.niveauActif==='3eme' ? "Trépied tenu 3s" : "Trépied passager"},
+    {key:"atr", label:"ATR"}
+  ];
+
+  let html = `<div class="table-wrap evalResultsTable" style="max-height:none;overflow-y:visible;"><table><thead><tr>
+    <th>Élève</th>
+    ${agresList.map(a=>`<th style="white-space:normal;min-width:190px;max-width:230px;">${a.label}<br><span style="font-weight:400;font-size:9.5px;color:var(--muted);text-transform:none;letter-spacing:0;display:block;text-align:left;">${gymDefs[a.key].legend.map(o=>`<b>${o.l}</b> ${o.text}`).join("<br>")}</span></th>`).join("")}
+  </tr></thead><tbody>
+  ${sorted.map(e=>{
+    let row = `<td class="nameCell">${e.nomPrenom}</td>`;
+    agresList.forEach(a=>{
+      const cur = c.gym[a.key].resultats[e.id] || null;
+      row += `<td class="${cur?'tdTier-'+cur:''}" style="cursor:pointer;" onclick="App.cycleGymTier('${cid}','${a.key}','${e.id}')" title="Cliquer pour changer (TB → S → F → I → vide)">${cur||'—'}</td>`;
+    });
+    return `<tr>${row}</tr>`;
+  }).join("")}
+  </tbody></table></div>`;
+  return html;
+}
+
+App.cycleGymTier = function(cid,agresKey,eid){
+  const c = classe(cid);
+  const cur = c.gym[agresKey].resultats[eid] || null;
+  const idx = TIER_CYCLE.indexOf(cur);
+  c.gym[agresKey].resultats[eid] = TIER_CYCLE[(idx+1)%TIER_CYCLE.length];
+  save(); render();
+};
+
+/* =========================================================================
+   RECAP
+   ========================================================================= */
+function renderRecapPanel(cid,c){
+  const sorted = sortStudents(c.eleves);
+  const seancesEval = c.seances.filter(s=>s.evalConfig);
+
+  let html = `
+      <div class="table-wrap recapTable" style="max-height:520px;">
+      <table><thead><tr><th>Élève</th>
+        ${seancesEval.map(s=>`<th>Séance ${s.numero}</th>`).join("")}
+        <th>Roulade AV</th><th>Roulade AR</th><th>Trépied</th><th>ATR</th>
+      </tr></thead><tbody>
+      ${sorted.map(e=>{
+        let row = `<td>${e.nomPrenom}</td>`;
+        for(const s of seancesEval){
+          if(s.absents.includes(e.id)) row += `<td>Abs.</td>`;
+          else if(s.dispenses.includes(e.id)) row += `<td>Disp.</td>`;
+          else row += `<td>${badgeHtml(globalTierForStudent(s,e.id))}</td>`;
+        }
+        ["rouladeAvant","rouladeArriere","trepied","atr"].forEach(k=>{
+          row += `<td>${badgeHtml(c.gym[k].resultats[e.id]||null)}</td>`;
+        });
+        return `<tr>${row}</tr>`;
+      }).join("")}
+      </tbody></table>
+      </div>
+      <div class="hint" style="margin-top:8px;">La note de séance combine automatiquement figures / liaisons / projet collectif (échelle indicative I→TB).</div>`;
+  return html;
+}
+
+/* =========================================================================
+   EXIGENCES (banque de figures + grille d'évaluation)
+   ========================================================================= */
+let cropState = null; // {img, scale, rect, canvas}
+
+function renderExigences(){
+  const n = niveau();
+  const bank = n.figuresBank;
+  let html = `<div class="acc open">
+    <div class="acc-head" style="cursor:default;"><h3>🗂️ Banque de figures — ${LEVEL_DEFAULTS[STATE.niveauActif].label}</h3></div>
+    <div class="acc-body">
+      <div class="hint">Deux façons d'alimenter la banque : importez l'image d'un tableau de figures puis dessinez un cadre (clic-glisser) autour de chaque figure à extraire — l'image reste affichée en permanence (même après extraction ou rechargement) — ou ajoutez directement une ou plusieurs images déjà individuelles.</div>
+      <div class="row" style="margin:10px 0;">
+        <button class="btn primary" onclick="document.getElementById('hiddenImgInput').dataset.target='figuresTableImg';document.getElementById('hiddenImgInput').click()">📁 ${n.figuresTableImg?'Remplacer':'Importer'} l'image du tableau de figures</button>
+        <button class="btn" onclick="document.getElementById('hiddenFigureInput').click()">➕ Ajouter directement des images à la banque</button>
+      </div>
+      <div id="cropZone"></div>
+      <h4 style="font-size:12.5px;margin:14px 0 6px;color:var(--muted);">BANQUE ACTUELLE (${bank.length})</h4>
+      <div class="bankGallery">
+      ${bank.map(f=>`<div class="bankItem"><img src="${f.img}"><div style="font-size:11px;font-weight:600;margin-top:3px;">${f.nom}</div>
+        <button class="del" onclick="App.supprimerFigureBanque('${f.id}')">✕</button></div>`).join("")}
+      ${bank.length===0?'<div class="emptyState">Aucune figure enregistrée.</div>':""}
+      </div>
+    </div>
+  </div>
+
+  <div class="acc open">
+    <div class="acc-head" style="cursor:default;"><h3>📐 Grille d'évaluation (image de référence)</h3></div>
+    <div class="acc-body">
+      <div class="row" style="margin-bottom:10px;">
+        <button class="btn" onclick="document.getElementById('hiddenImgInput').dataset.target='grilleEvalImg';document.getElementById('hiddenImgInput').click()">📁 ${n.grilleEvalImg?'Remplacer':'Importer'} la grille d'évaluation</button>
+        ${n.grilleEvalImg?`<button class="btn danger" onclick="App.supprimerGrille()">🗑️ Supprimer</button>`:""}
+      </div>
+      ${n.grilleEvalImg ? `<img src="${n.grilleEvalImg}" style="max-width:100%;border:1px solid var(--border);border-radius:10px;">` : `<div class="emptyState">Aucune grille importée.</div>`}
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-head" onclick="App.toggleAcc('sheetSettings',false)"><span class="chev">▶</span><h3>⚙️ Paramètres</h3></div>
+    <div class="acc-body">
+      <div class="field"><label>Lien du Google Sheet des élèves</label>
+      <input type="text" style="width:100%;max-width:560px;" value="${App.getSheetUrl()}" onchange="App.setSheetUrl(this.value)"></div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-head" onclick="App.toggleAcc('syncSettings',false)"><span class="chev">▶</span><h3>☁️ Synchronisation ordinateur ↔ tablette</h3><span class="meta">${App.getSyncUrl()?'activée':'non configurée'}</span></div>
+    <div class="acc-body">
+      <div class="hint" style="margin-bottom:10px;">Collez ici l'URL de votre script Google (voir « ❔ Aide » en haut de page pour le code à déployer une seule fois). Une fois configurée sur <b>tous</b> vos appareils, l'application récupère automatiquement la dernière version enregistrée à l'ouverture, et envoie vos modifications en arrière-plan.</div>
+      <div class="field" style="margin-bottom:10px;"><label>URL du script Google (Apps Script Web App)</label>
+        <input type="text" style="width:100%;max-width:560px;" value="${App.getSyncUrl()}" placeholder="https://script.google.com/macros/s/AKfycb.../exec" onchange="App.setSyncUrl(this.value)"></div>
+      <div class="row">
+        <button class="btn small" onclick="App.syncPull(true)">☁️⬇️ Récupérer maintenant</button>
+        <button class="btn small" onclick="App.syncPush(true)">☁️⬆️ Envoyer maintenant</button>
+      </div>
+      <div id="syncStatusLine" style="margin-top:8px;font-size:11.5px;color:var(--muted);"></div>
+    </div>
+  </div>`;
+  return html;
+}
+
+App.setSheetUrl = function(val){ STATE.sheetUrl = normalize(val)||SHEET_URL_DEFAULT; save(); };
+
+App.supprimerFigureBanque = function(fid){
+  if(!confirm("Supprimer cette figure de la banque ?")) return;
+  const n = niveau();
+  n.figuresBank = n.figuresBank.filter(f=>f.id!==fid);
+  save(); render();
+};
+App.supprimerGrille = function(){
+  niveau().grilleEvalImg = null;
+  save(); render();
+};
+
+function readFileAsDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const r = new FileReader();
+    r.onload = ()=>resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+function resizeImageDataUrl(dataUrl, maxDim){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.onload = function(){
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if(Math.max(w,h) > maxDim){
+        const scale = maxDim / Math.max(w,h);
+        w = Math.round(w*scale); h = Math.round(h*scale);
+      }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      resolve(c.toDataURL("image/jpeg",0.88));
+    };
+    img.onerror = ()=>resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+document.getElementById("hiddenFigureInput").addEventListener("change", async function(e){
+  const files = Array.from(e.target.files||[]);
+  e.target.value = "";
+  if(files.length===0) return;
+  let added = 0;
+  for(const f of files){
+    const raw = await readFileAsDataURL(f);
+    const dataUrl = await resizeImageDataUrl(raw, 500);
+    const defaultName = f.name.replace(/\.[^.]+$/,"");
+    const nom = normalize(prompt(`Nom de cette figure (${added+1}/${files.length}) :`, defaultName));
+    if(!nom) continue;
+    niveau().figuresBank.push({ id: uid("fig"), nom, img: dataUrl });
+    added++;
+  }
+  save(); render();
+});
+
+document.getElementById("hiddenImgInput").addEventListener("change", async function(e){
+  const target = e.target.dataset.target;
+  const f = e.target.files[0];
+  e.target.value = "";
+  if(!f) return;
+  const raw = await readFileAsDataURL(f);
+  const resized = await resizeImageDataUrl(raw, target==="figuresTableImg" ? 1600 : 1400);
+  if(target==="figuresTableImg"){
+    niveau().figuresTableImg = resized;
+    save();
+    startCrop(resized);
+  } else if(target==="grilleEvalImg"){
+    niveau().grilleEvalImg = resized;
+    save(); render();
+  }
+});
+
+function startCrop(dataUrl){
+  const img = new Image();
+  img.onload = function(){
+    const maxW = Math.min(820, (document.getElementById("cropZone")||{}).clientWidth || 820);
+    const scale = Math.min(1, maxW / img.naturalWidth);
+    cropState = { img, scale, rect:null, drawing:false, niveauKey: STATE.niveauActif };
+    renderCropZone();
+  };
+  img.src = dataUrl;
+}
+
+function renderCropZone(){
+  const zone = document.getElementById("cropZone");
+  if(!cropState){ zone.innerHTML=""; return; }
+  const w = Math.round(cropState.img.naturalWidth*cropState.scale);
+  const h = Math.round(cropState.img.naturalHeight*cropState.scale);
+  zone.innerHTML = `<div class="cropWrap"><canvas id="cropCanvas" width="${w}" height="${h}"></canvas></div>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn primary" id="extractBtn" disabled onclick="App.extraireFigure()">✂️ Extraire la sélection</button>
+      <button class="btn danger" onclick="App.supprimerImageSource()">🗑️ Supprimer l'image source</button>
+    </div>
+    <div class="hint" style="margin-top:6px;">Dessinez un cadre avec la souris (clic-glisser) sur la figure à extraire, puis cliquez sur « Extraire ».</div>`;
+  const canvas = document.getElementById("cropCanvas");
+  const ctx = canvas.getContext("2d");
+  function redraw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(cropState.img,0,0,canvas.width,canvas.height);
+    if(cropState.rect){
+      const r = cropState.rect;
+      ctx.strokeStyle = "#5b4ddb"; ctx.lineWidth=2;
+      ctx.setLineDash([6,4]);
+      ctx.strokeRect(r.x,r.y,r.w,r.h);
+      ctx.fillStyle = "rgba(91,77,219,0.12)";
+      ctx.fillRect(r.x,r.y,r.w,r.h);
+    }
+  }
+  redraw();
+  let startX,startY;
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x:(clientX-rect.left)*(canvas.width/rect.width), y:(clientY-rect.top)*(canvas.height/rect.height) };
+  }
+  function down(e){ e.preventDefault(); const p=getPos(e); startX=p.x; startY=p.y; cropState.drawing=true; }
+  function move(e){
+    if(!cropState.drawing) return; e.preventDefault();
+    const p = getPos(e);
+    cropState.rect = { x:Math.min(startX,p.x), y:Math.min(startY,p.y), w:Math.abs(p.x-startX), h:Math.abs(p.y-startY) };
+    redraw();
+    document.getElementById("extractBtn").disabled = !(cropState.rect.w>6 && cropState.rect.h>6);
+  }
+  function up(e){ cropState.drawing=false; }
+  canvas.addEventListener("mousedown",down);
+  canvas.addEventListener("mousemove",move);
+  window.addEventListener("mouseup",up);
+  canvas.addEventListener("touchstart",down);
+  canvas.addEventListener("touchmove",move);
+  canvas.addEventListener("touchend",up);
+}
+
+App.supprimerImageSource = function(){
+  if(!confirm("Supprimer l'image du tableau de figures ? Les figures déjà extraites dans la banque seront conservées.")) return;
+  cropState = null;
+  niveau().figuresTableImg = null;
+  save(); render();
+};
+
+App.extraireFigure = function(){
+  if(!cropState || !cropState.rect) return;
+  const r = cropState.rect;
+  const inv = 1/cropState.scale;
+  const sx = r.x*inv, sy = r.y*inv, sw = r.w*inv, sh = r.h*inv;
+  const off = document.createElement("canvas");
+  off.width = Math.max(1,Math.round(sw)); off.height = Math.max(1,Math.round(sh));
+  off.getContext("2d").drawImage(cropState.img, sx, sy, sw, sh, 0, 0, off.width, off.height);
+  const dataUrl = off.toDataURL("image/png");
+  const nom = normalize(prompt("Nom de cette figure :",""));
+  if(!nom){ return; }
+  niveau().figuresBank.push({ id: uid("fig"), nom, img: dataUrl });
+  cropState.rect = null;
+  save();
+  render(); // render() ré-affiche automatiquement l'outil de recadrage (cropState est conservé) pour extraire la figure suivante
+};
+
+/* =========================================================================
+   EXPORT / IMPORT JSON (sauvegarde manuelle multi-appareils)
+   ========================================================================= */
+App.exportData = function(){
+  const blob = new Blob([JSON.stringify(STATE,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const d = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = "acrosport_sauvegarde_"+d+".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+App.importDataFile = function(){ document.getElementById("hiddenFileInput").click(); };
+document.getElementById("hiddenFileInput").addEventListener("change", function(e){
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const data = JSON.parse(reader.result);
+      if(!data.niveaux) throw new Error("format invalide");
+      if(!confirm("Remplacer les données actuelles par celles de ce fichier ?")) return;
+      STATE = data;
+      save(); render();
+    }catch(err){ alert("Fichier invalide : "+err.message); }
+  };
+  reader.readAsText(f,"UTF-8");
+  e.target.value="";
+});
+
+App.resetAllConfirm = function(){
+  if(!confirm("⚠️ Réinitialiser TOUTES les données (classes, élèves, séances, notes, banque de figures) ? Cette action est irréversible. Pensez à exporter une sauvegarde avant.")) return;
+  STATE = freshState();
+  save(); render();
+};
+
+App.openAide = function(){
+  openModal(`<div class="modalHead"><h3>Aide rapide</h3><button class="modalClose" onclick="App.closeModal()">✕</button></div>
+  <div class="modalBody">
+    <ol style="padding-left:18px;line-height:1.7;">
+      <li>Choisissez le niveau (4ème / 3ème) en haut.</li>
+      <li>Cliquez sur « + Importer élèves / classe » : collez les données copiées depuis le Google Sheet (ou importez un CSV), puis choisissez les classes à créer.</li>
+      <li>Dans l'onglet « ⭐ Exigences », importez l'image du tableau de figures et extrayez chaque figure (cadre à la souris) pour constituer la banque.</li>
+      <li>Dans une classe, créez les séances : présence, groupes/binômes générés automatiquement (modifiables), figures à valider en direct d'un clic.</li>
+      <li>À partir de la séance 4, les grilles d'évaluation (figures, liaisons, projet collectif) apparaissent — critères et barèmes sont modifiables.</li>
+      <li>L'onglet « Éléments gymniques » et « Récap » se remplissent automatiquement.</li>
+      <li>Pour passer d'un appareil à l'autre, voir « ☁️ Synchroniser ordinateur ↔ tablette » ci-dessous.</li>
+    </ol>
+    <h4 style="font-size:13px;margin:16px 0 6px;">☁️ Synchronisation automatique (recommandé)</h4>
+    <div class="hint" style="margin-bottom:10px;">Un petit script Google gratuit (hébergé sur votre propre compte Google) permet à l'application de toujours récupérer la dernière version enregistrée à l'ouverture, sur tous vos appareils, sans rien exporter/importer à la main.</div>
+    <ol style="padding-left:18px;line-height:1.8;margin-top:0;">
+      <li>Allez sur <a href="#" onclick="window.open('https://script.google.com','_blank');return false;">script.google.com</a>, créez un <b>nouveau projet</b>.</li>
+      <li>Supprimez le contenu par défaut et collez-y le code ci-dessous :
+        <div style="position:relative;margin:6px 0;">
+          <textarea id="appsScriptCode" readonly style="width:100%;min-height:150px;font-family:monospace;font-size:11px;padding:8px;border:1px solid var(--border);border-radius:8px;background:#f7f8fc;">${APPS_SCRIPT_CODE.replace(/</g,"&lt;")}</textarea>
+          <button class="btn small" style="position:absolute;top:6px;right:6px;" onclick="App.copyAppsScriptCode()">📋 Copier</button>
+        </div>
+      </li>
+      <li>Cliquez sur <b>Déployer</b> → <b>Nouveau déploiement</b> → type <b>Application Web</b>.
+        <br>Réglages : « Exécuter en tant que » = <b>Moi</b>, « Qui a accès » = <b>Tout le monde</b>.</li>
+      <li>Autorisez l'accès (c'est votre propre script, sur votre propre compte Google), puis <b>copiez l'URL de déploiement</b> obtenue (elle ressemble à <code>https://script.google.com/macros/s/.../exec</code>).</li>
+      <li>Collez cette URL dans l'application, onglet <b>⭐ Exigences → ⚙️ Paramètres → ☁️ Synchronisation</b>, <b>sur chaque appareil</b> (ordinateur ET tablette).</li>
+    </ol>
+    <div class="hint" style="margin-bottom:10px;">⚠️ Cette URL donne accès en lecture/écriture à vos données : ne la partagez qu'avec vous-même (ne la publiez pas).</div>
+
+    <h4 style="font-size:13px;margin:16px 0 6px;">Méthode manuelle (sans script)</h4>
+    <p style="margin:6px 0;"><b>Avec OneDrive</b>, puisque ce fichier s'y trouve déjà :</p>
+    <ol style="padding-left:18px;line-height:1.7;margin-top:0;">
+      <li>Sur l'ordinateur : cliquez sur <b>⬇️ Exporter</b> et enregistrez le fichier dans le même dossier OneDrive que <code>acrosport.html</code> (ex. <i>Documents/IA CLaude/Acrosport</i>).</li>
+      <li>OneDrive synchronise automatiquement ce dossier sur la tablette.</li>
+      <li>Sur la tablette : ouvrez <code>acrosport.html</code> depuis l'appli OneDrive, puis cliquez sur <b>⬆️ Importer</b> et sélectionnez ce fichier de sauvegarde.</li>
+      <li>Faites l'inverse après une séance sur tablette pour rapatrier les données vers l'ordinateur.</li>
+    </ol>
+    <p style="margin:6px 0;"><b>Sans OneDrive</b> : exportez le fichier et envoyez-le vous-même (email, clé USB, Drive...), puis importez-le sur l'autre appareil.</p>
+  </div>`);
+};
+
+App.copyAppsScriptCode = function(){
+  const ta = document.getElementById("appsScriptCode");
+  if(!ta) return;
+  ta.select();
+  try{
+    navigator.clipboard.writeText(ta.value).then(()=>alert("Code copié ! Collez-le dans script.google.com.")).catch(()=>document.execCommand("copy"));
+  }catch(e){
+    try{ document.execCommand("copy"); alert("Code copié !"); }catch(e2){ alert("Sélectionnez le texte puis copiez-le (Ctrl+C)."); }
+  }
+};
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+render();
+if(getSyncUrl()){
+  App.syncPull(false);
+} else {
+  save();
+}
+</script>
+</body>
+</html>
