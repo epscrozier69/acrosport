@@ -759,6 +759,14 @@ function openModal(html){
 }
 App.closeModal = function(){ document.getElementById("modalRoot").innerHTML=""; };
 
+App.zoomImage = function(src){
+  document.getElementById("modalRoot").innerHTML =
+    `<div class="modalOverlay" onclick="App.closeModal()">
+      <img src="${src}" style="max-width:95vw;max-height:92vh;object-fit:contain;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);">
+      <button class="modalClose" style="position:fixed;top:14px;right:18px;" onclick="App.closeModal()">✕</button>
+    </div>`;
+};
+
 App.openImportModal = function(tab){
   if(!tab) tab = STATE.importCache ? "direct" : "auto";
   importPreview = (tab==="direct" && STATE.importCache) ? STATE.importCache : null;
@@ -2464,7 +2472,7 @@ function renderExigences(){
       ${bank.map(f=>{
         const val = figureValeurAuto(f.nom);
         const col = val===1?'#ff9800':val===2?'#8bc34a':val===3?'#2e7d32':null;
-        return `<div class="bankItem"><img src="${f.img}"><div style="font-size:11px;font-weight:600;margin-top:3px;">${f.nom}</div>
+        return `<div class="bankItem"><img src="${f.img}" style="cursor:zoom-in;" onclick="App.zoomImage('${f.img}')"><div style="font-size:11px;font-weight:600;margin-top:3px;">${f.nom}</div>
         ${col?`<div style="font-size:10px;font-weight:700;margin-top:3px;color:${col};">${val} point${val>1?'s':''}</div>`:''}
         <button class="del" onclick="App.supprimerFigureBanque('${f.id}')">✕</button></div>`;
       }).join("")}
@@ -2480,7 +2488,7 @@ function renderExigences(){
         <button class="btn" onclick="document.getElementById('hiddenImgInput').dataset.target='grilleEvalImg';document.getElementById('hiddenImgInput').click()">📁 ${n.grilleEvalImg?'Remplacer':'Importer'} la grille d'évaluation</button>
         ${n.grilleEvalImg?`<button class="btn danger" onclick="App.supprimerGrille()">🗑️ Supprimer</button>`:""}
       </div>
-      ${n.grilleEvalImg ? `<img src="${n.grilleEvalImg}" style="max-width:100%;border:1px solid var(--border);border-radius:10px;">` : `<div class="emptyState">Aucune grille importée.</div>`}
+      ${n.grilleEvalImg ? `<img src="${n.grilleEvalImg}" style="max-width:100%;border:1px solid var(--border);border-radius:10px;cursor:zoom-in;" onclick="App.zoomImage('${n.grilleEvalImg}')">` : `<div class="emptyState">Aucune grille importée.</div>`}
     </div>
   </div>
 
@@ -2601,6 +2609,7 @@ function renderCropZone(){
   zone.innerHTML = `<div class="cropWrap"><canvas id="cropCanvas" width="${w}" height="${h}"></canvas></div>
     <div class="row" style="margin-top:8px;">
       <button class="btn primary" id="extractBtn" disabled onclick="App.extraireFigure()">✂️ Extraire la sélection</button>
+      <button class="btn" onclick="App.zoomImage(cropState.img.src)">🔍 Agrandir l'image</button>
       <button class="btn danger" onclick="App.supprimerImageSource()">🗑️ Supprimer l'image source</button>
     </div>
     <div class="hint" style="margin-top:6px;">Dessinez un cadre avec la souris (clic-glisser) sur la figure à extraire, puis cliquez sur « Extraire ».</div>`;
