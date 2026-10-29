@@ -441,6 +441,13 @@ function save(){
   }
 }
 
+// Sauvegarde locale pour les préférences d'affichage uniquement (onglet actif, panneaux repliés) :
+// ne touche pas lastModified ni la synchronisation, pour que naviguer dans l'app sur un appareil
+// ne masque pas des données plus récentes venant d'un autre appareil lors du prochain pull.
+function saveUIOnly(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }catch(e){}
+}
+
 function uid(prefix){ return (prefix||"id")+"_"+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4); }
 
 /* =========================================================================
@@ -539,6 +546,26 @@ App.syncPull = function(manual){
     .catch(()=>{ App.updateSyncStatus("⚠️ Synchronisation impossible (connexion ou URL invalide)"); });
 };
 
+// Récupère les données du cloud et les applique SANS regarder quel appareil est "plus récent"
+// (utile si l'horloge/lastModified d'un appareil est faussée et bloque une vraie mise à jour).
+App.syncForcePull = function(){
+  const url = getSyncUrl();
+  if(!url){ alert("Configurez d'abord l'URL de synchronisation."); return; }
+  App.updateSyncStatus("🔄 Récupération forcée en cours...");
+  fetch(url, { method:"GET", cache:"no-store" })
+    .then(r=>r.json())
+    .then(remote=>{
+      if(!remote || !remote.niveaux){ App.updateSyncStatus("⚠️ Aucune donnée distante à récupérer."); return; }
+      const localCount = countClasses(STATE), remoteCount = countClasses(remote);
+      if(!confirm("Remplacer TOUTES les données de cet appareil par celles du cloud ?\n\nCloud : "+remoteCount+" classe(s)\nCet appareil : "+localCount+" classe(s)\n\nCette action est irréversible sur cet appareil.")) return;
+      STATE = remote;
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }catch(e){}
+      render();
+      App.updateSyncStatus("☁️ Données forcées depuis le cloud à "+nowHHMM());
+    })
+    .catch(()=>{ App.updateSyncStatus("⚠️ Synchronisation impossible (connexion ou URL invalide)"); });
+};
+
 /* ---- generic helpers ---- */
 function niveau(){ return STATE.niveaux[STATE.niveauActif]; }
 function classe(classeId){ return niveau().classes[classeId]; }
@@ -597,7 +624,7 @@ function isOpen(key,defaultOpen){
 App.toggleAcc = function(key,defaultOpen){
   const open = isOpen(key,defaultOpen);
   STATE.ui.collapsed[key] = open; // true => collapsed
-  save();
+  saveUIOnly();
   render();
 };
 
@@ -611,7 +638,7 @@ function getActiveSubTab(key,defaultVal){
 App.setActiveSubTab = function(key,val){
   STATE.ui.activeSubTab = STATE.ui.activeSubTab || {};
   STATE.ui.activeSubTab[key] = val;
-  save();
+  saveUIOnly();
   render();
 };
 
@@ -2469,7 +2496,9 @@ function renderExigences(){
       <div class="row">
         <button class="btn small" onclick="App.syncPull(true)">☁️⬇️ Récupérer maintenant</button>
         <button class="btn small" onclick="App.syncPush(true)">☁️⬆️ Envoyer maintenant</button>
+        <button class="btn small danger" onclick="App.syncForcePull()">⚠️ Forcer la récupération depuis le cloud</button>
       </div>
+      <div class="hint" style="margin-top:6px;">« Forcer » remplace toutes les données de cet appareil par celles du cloud, sans comparer les dates — à utiliser si un appareil refuse de se mettre à jour.</div>
       <div id="syncStatusLine" style="margin-top:8px;font-size:11.5px;color:var(--muted);"></div>
     </div>
   </div>`;
