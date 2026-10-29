@@ -427,6 +427,7 @@ let saveTimer=null;
 function save(){
   try{
     STATE.lastModified = Date.now();
+    STATE.rev = (STATE.rev||0) + 1; // compteur de révision, insensible au décalage d'horloge entre appareils
     localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
     const el = document.getElementById("saveIndicator");
     if(el){
@@ -530,8 +531,8 @@ App.syncPull = function(manual){
     .then(r=>r.json())
     .then(remote=>{
       if(!remote || !remote.niveaux){ App.updateSyncStatus("☁️ Aucune donnée distante pour l'instant — envoi de vos données locales."); App.syncPush(false); return; }
-      const remoteTime = remote.lastModified || 0;
-      const localTime = STATE.lastModified || 0;
+      const remoteTime = remote.rev || 0;
+      const localTime = STATE.rev || 0;
       if(remoteTime > localTime){
         const localCount = countClasses(STATE), remoteCount = countClasses(remote);
         if(remoteCount < localCount){
@@ -545,7 +546,6 @@ App.syncPull = function(manual){
         App.updateSyncStatus("☁️ Données récupérées à "+nowHHMM());
       } else {
         App.updateSyncStatus("☁️ Déjà à jour ("+nowHHMM()+").");
-        App.syncPush(false);
       }
     })
     .catch(()=>{ App.updateSyncStatus("⚠️ Synchronisation impossible (connexion ou URL invalide)"); });
