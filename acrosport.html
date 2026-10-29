@@ -517,11 +517,15 @@ function countClasses(st){
   return n;
 }
 
+function cacheBustUrl(url){
+  return url + (url.indexOf("?")>=0 ? "&" : "?") + "_t=" + Date.now();
+}
+
 App.syncPull = function(manual){
   const url = getSyncUrl();
   if(!url){ if(manual) alert("Configurez d'abord l'URL de synchronisation."); return; }
   App.updateSyncStatus("🔄 Synchronisation en cours...");
-  fetch(url, { method:"GET", cache:"no-store" })
+  fetch(cacheBustUrl(url), { method:"GET", cache:"no-store" })
     .then(r=>r.json())
     .then(remote=>{
       if(!remote || !remote.niveaux){ App.updateSyncStatus("☁️ Aucune donnée distante pour l'instant — envoi de vos données locales."); App.syncPush(false); return; }
@@ -552,7 +556,7 @@ App.syncForcePull = function(){
   const url = getSyncUrl();
   if(!url){ alert("Configurez d'abord l'URL de synchronisation."); return; }
   App.updateSyncStatus("🔄 Récupération forcée en cours...");
-  fetch(url, { method:"GET", cache:"no-store" })
+  fetch(cacheBustUrl(url), { method:"GET", cache:"no-store" })
     .then(r=>r.json())
     .then(remote=>{
       if(!remote || !remote.niveaux){ App.updateSyncStatus("⚠️ Aucune donnée distante à récupérer."); return; }
