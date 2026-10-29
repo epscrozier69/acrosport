@@ -273,6 +273,7 @@ footer.app-foot{text-align:center;color:var(--muted);font-size:11px;padding:16px
   <div class="toolbar">
     <span id="saveIndicator"></span>
     <span id="syncIndicator" style="font-size:11px;opacity:.9;"></span>
+    <button class="btn ghost" onclick="App.openSettingsModal()">⚙️ Paramètres</button>
     <button class="btn ghost" onclick="App.exportData()">⬇️ Exporter</button>
     <button class="btn ghost" onclick="App.importDataFile()">⬆️ Importer</button>
     <button class="btn ghost" onclick="App.resetAllConfirm()">🗑️ Réinitialiser</button>
@@ -2483,31 +2484,29 @@ function renderExigences(){
     </div>
   </div>
 
-  <div class="acc ${isOpen('sheetSettings',false)?'open':''}">
-    <div class="acc-head" onclick="App.toggleAcc('sheetSettings',false)"><span class="chev">▶</span><h3>⚙️ Paramètres</h3></div>
-    <div class="acc-body">
-      <div class="field"><label>Lien du Google Sheet des élèves</label>
-      <input type="text" style="width:100%;max-width:560px;" value="${App.getSheetUrl()}" onchange="App.setSheetUrl(this.value)"></div>
-    </div>
-  </div>
-
-  <div class="acc ${isOpen('syncSettings',false)?'open':''}">
-    <div class="acc-head" onclick="App.toggleAcc('syncSettings',false)"><span class="chev">▶</span><h3>☁️ Synchronisation ordinateur ↔ tablette</h3><span class="meta">${App.getSyncUrl()?'activée':'non configurée'}</span></div>
-    <div class="acc-body">
-      <div class="hint" style="margin-bottom:10px;">URL de votre script Google Apps Script déployé. Une fois configurée sur <b>tous</b> vos appareils, l'application récupère automatiquement la dernière version enregistrée à l'ouverture, et envoie vos modifications en arrière-plan.</div>
-      <div class="field" style="margin-bottom:10px;"><label>URL du script Google (Apps Script Web App)</label>
-        <input type="text" style="width:100%;max-width:560px;" value="${App.getSyncUrl()}" placeholder="https://script.google.com/macros/s/AKfycb.../exec" onchange="App.setSyncUrl(this.value)"></div>
-      <div class="row">
-        <button class="btn small" onclick="App.syncPull(true)">☁️⬇️ Récupérer maintenant</button>
-        <button class="btn small" onclick="App.syncPush(true)">☁️⬆️ Envoyer maintenant</button>
-        <button class="btn small danger" onclick="App.syncForcePull()">⚠️ Forcer la récupération depuis le cloud</button>
-      </div>
-      <div class="hint" style="margin-top:6px;">« Forcer » remplace toutes les données de cet appareil par celles du cloud, sans comparer les dates — à utiliser si un appareil refuse de se mettre à jour.</div>
-      <div id="syncStatusLine" style="margin-top:8px;font-size:11.5px;color:var(--muted);"></div>
-    </div>
-  </div>`;
+`;
   return html;
 }
+
+App.openSettingsModal = function(){
+  openModal(`
+    <div class="modalHead"><h3>⚙️ Paramètres de l'application</h3><button class="modalClose" onclick="App.closeModal()">✕</button></div>
+    <div class="field" style="margin-bottom:14px;"><label>Lien du Google Sheet des élèves</label>
+      <input type="text" style="width:100%;max-width:560px;" value="${App.getSheetUrl()}" onchange="App.setSheetUrl(this.value)"></div>
+
+    <h4 style="font-size:13px;margin:16px 0 6px;">☁️ Synchronisation ordinateur ↔ tablette</h4>
+    <div class="hint" style="margin-bottom:10px;">URL de votre script Google Apps Script déployé. Une fois configurée sur <b>tous</b> vos appareils, l'application récupère automatiquement la dernière version enregistrée à l'ouverture, et envoie vos modifications en arrière-plan.</div>
+    <div class="field" style="margin-bottom:10px;"><label>URL du script Google (Apps Script Web App)</label>
+      <input type="text" style="width:100%;max-width:560px;" value="${App.getSyncUrl()}" placeholder="https://script.google.com/macros/s/AKfycb.../exec" onchange="App.setSyncUrl(this.value)"></div>
+    <div class="row">
+      <button class="btn small" onclick="App.syncPull(true)">☁️⬇️ Récupérer maintenant</button>
+      <button class="btn small" onclick="App.syncPush(true)">☁️⬆️ Envoyer maintenant</button>
+      <button class="btn small danger" onclick="App.syncForcePull()">⚠️ Forcer la récupération depuis le cloud</button>
+    </div>
+    <div class="hint" style="margin-top:6px;">« Forcer » remplace toutes les données de cet appareil par celles du cloud, sans comparer les dates — à utiliser si un appareil refuse de se mettre à jour.</div>
+    <div id="syncStatusLine" style="margin-top:8px;font-size:11.5px;color:var(--muted);"></div>
+  `);
+};
 
 App.setSheetUrl = function(val){ STATE.sheetUrl = normalize(val)||SHEET_URL_DEFAULT; save(); };
 
@@ -2789,6 +2788,9 @@ App.resetAllConfirm = function(){
 render();
 if(getSyncUrl()){
   App.syncPull(false);
+  // Resynchronisation automatique en arrière-plan pendant que l'app reste ouverte
+  // (en plus de la récupération à l'ouverture et de l'envoi après chaque modification).
+  setInterval(()=>{ if(getSyncUrl()) App.syncPull(false); }, 30000);
 } else {
   save();
 }
