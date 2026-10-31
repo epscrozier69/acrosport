@@ -966,7 +966,7 @@ function renderImportPreview(){
       const count = rows.filter(r=>r.classe===c).length;
       const already = dejaImportees.has(c);
       html += `<label style="display:flex;align-items:center;gap:5px;background:${already?'#eef7ef':'#f3f4fa'};border:1px solid ${already?'#b7e2ba':'var(--border)'};border-radius:8px;padding:5px 10px;">
-        <input type="checkbox" class="importClasseChk" value="${c}" ${already?'':'checked'}> <b>${c}</b> <span style="color:var(--muted);">(${count})</span>${already?' <span class="pill" style="background:var(--s-bg);color:var(--s);" title="Si coché : ajoute les nouveaux élèves et retire ceux absents de cette liste (sans toucher aux notes déjà saisies)">déjà importée — cocher pour mettre à jour</span>':''}</label>`;
+        <input type="checkbox" class="importClasseChk" value="${c}" checked> <b>${c}</b> <span style="color:var(--muted);">(${count})</span>${already?' <span class="pill" style="background:var(--s-bg);color:var(--s);" title="Ajoute les nouveaux élèves et retire ceux absents de cette liste (sans toucher aux notes déjà saisies)">déjà importée — décocher pour ne pas mettre à jour</span>':''}</label>`;
     }
     if(classesNiveau.length>0 && classesAutres.length>0){
       html += `</div><div class="hint" style="margin-bottom:10px;">${classesAutres.length} autre(s) classe(s) détectée(s) ne semblent pas être du niveau ${LEVEL_DEFAULTS[STATE.niveauActif].label} (${classesAutres.join(", ")}) et sont masquées.
