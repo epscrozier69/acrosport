@@ -578,6 +578,7 @@ function activeClasse(){ const n=niveau(); return n.classeActive ? n.classes[n.c
 
 function normalize(s){ return (s||"").toString().trim(); }
 function stripAccents(s){ return normalize(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+function classKey(s){ return stripAccents(s).replace(/\s+/g,""); }
 function sexeIcon(sexe){
   const sNorm = stripAccents(sexe);
   if(sNorm.startsWith("f")) return "♀";
@@ -909,6 +910,19 @@ function parseImportText(txt){
 
   const rows=[];
   const classesSet = new Set();
+  // Regroupe les variantes d'écriture d'un même nom de classe (majuscules, espaces, accents)
+  // pour éviter qu'une cellule "Classe" mal formatée crée une classe fantôme et fasse disparaître un élève.
+  const existingClassNames = Object.values(niveau().classes).map(c=>c.nom);
+  const canonicalByKey = {};
+  function canonicalClasse(raw){
+    if(!raw) return raw;
+    const key = classKey(raw);
+    if(canonicalByKey[key]) return canonicalByKey[key];
+    const existingMatch = existingClassNames.find(n=>classKey(n)===key);
+    const canon = existingMatch || raw;
+    canonicalByKey[key] = canon;
+    return canon;
+  }
   for(const line of dataLines){
     const cols = splitLine(line).map(c=>normalize(c));
     if(cols.every(c=>c==="")) continue;
@@ -921,7 +935,8 @@ function parseImportText(txt){
       nom = idxNom>=0 ? (cols[idxNom]||"") : "";
       prenom = idxPrenom>=0 ? (cols[idxPrenom]||"") : "";
     }
-    const cl = idxClasse>=0 ? (cols[idxClasse]||"") : "";
+    const clRaw = idxClasse>=0 ? (cols[idxClasse]||"") : "";
+    const cl = canonicalClasse(clRaw);
     const sexe = idxSexe>=0 ? (cols[idxSexe]||"") : "";
     if(!nom && !prenom) continue;
     if(cl) classesSet.add(cl);
@@ -1016,9 +1031,25 @@ App.confirmImport = function(){
     const isNew = !clId;
     const target = isNew ? newClasseObj(clName) : n.classes[clId];
     const studentsForClass = importPreview.rows.filter(r=>r.classe===clName);
-    const importNames = studentsForClass.map(s=>stripAccents(s.nomPrenom));
-    const toAdd = studentsForClass.filter(s=>!target.eleves.some(e=>stripAccents(e.nomPrenom)===stripAccents(s.nomPrenom)));
-    const toRemove = isNew ? [] : target.eleves.filter(e=>!importNames.includes(stripAccents(e.nomPrenom)));
+    // Comparaison par "multiset" (comptage par nom) plutôt que simple présence/absence,
+    // pour gérer correctement les homonymes (deux élèves de même nom dans la classe) :
+    // un nom déjà présent une fois ne doit pas bloquer l'ajout d'un second élève portant ce même nom.
+    const importCounts = {};
+    studentsForClass.forEach(s=>{ const nm=stripAccents(s.nomPrenom); importCounts[nm]=(importCounts[nm]||0)+1; });
+    const existingCounts = {};
+    target.eleves.forEach(e=>{ const nm=stripAccents(e.nomPrenom); existingCounts[nm]=(existingCounts[nm]||0)+1; });
+    const addedSoFar = {};
+    const toAdd = studentsForClass.filter(s=>{
+      const nm = stripAccents(s.nomPrenom);
+      addedSoFar[nm] = (addedSoFar[nm]||0)+1;
+      return addedSoFar[nm] > (existingCounts[nm]||0);
+    });
+    const keptSoFar = {};
+    const toRemove = isNew ? [] : target.eleves.filter(e=>{
+      const nm = stripAccents(e.nomPrenom);
+      keptSoFar[nm] = (keptSoFar[nm]||0)+1;
+      return keptSoFar[nm] > (importCounts[nm]||0);
+    });
     plan.push({ clName, clId: clId||uid("cl"), isNew, target, toAdd, toRemove });
   }
 
