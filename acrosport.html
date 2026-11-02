@@ -1648,15 +1648,11 @@ function renderSeanceContent(cid,c,s){
   }
 
   html += sectionTitle(kGroupes,"GROUPES / BINÔMES",true);
-  if(sectionOpen(kGroupes,true)){
+  if(sectionOpen(kGroupes,true) && groupSelection && groupSelection.sid===s.id){
     html += `<div class="hint" style="margin-bottom:10px;">
-        ${groupSelection && groupSelection.sid===s.id
-          ? (s.numero<=3
-              ? `👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un <b>autre élève</b> pour former le binôme automatiquement, ou sur un groupe existant pour l'y placer (ex : dernier élève en surnombre). Cliquez à nouveau sur son nom pour annuler.`
-              : `👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un groupe (ou « + Nouveau groupe ») pour l'y placer. Cliquez à nouveau sur son nom pour annuler.`)
-          : (s.numero<=3
-              ? `Cliquez sur 2 élèves pour former automatiquement un binôme. Si le nombre d'élèves est impair, placez le dernier manuellement sur un binôme existant.`
-              : `Cliquez sur un élève puis sur le groupe souhaité pour l'y associer. Entièrement manuel : aucune génération automatique.`)}
+        ${s.numero<=3
+          ? `👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un <b>autre élève</b> pour former le binôme automatiquement, ou sur un groupe existant pour l'y placer (ex : dernier élève en surnombre). Cliquez à nouveau sur son nom pour annuler.`
+          : `👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un groupe (ou « + Nouveau groupe ») pour l'y placer. Cliquez à nouveau sur son nom pour annuler.`}
       </div>`;
   }
 
