@@ -1289,7 +1289,7 @@ function renderSeancesPanel(cid,c){
     html += `<div class="subTab small2 ${activeId===s.id?'active':''}" style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="App.setActiveSubTab('${tabKey}','${s.id}')">
       <span style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
         <span style="font-size:14.5px;font-weight:800;">Séance ${s.numero}</span>
-        <input type="date" value="${s.date||new Date().toISOString().slice(0,10)}" style="font-size:12px;font-weight:700;opacity:.85;border:none;background:transparent;color:inherit;padding:0;width:84px;cursor:pointer;" onclick="event.stopPropagation();if(this.showPicker)this.showPicker();" onchange="event.stopPropagation();App.majDateSeance('${cid}','${s.id}',this.value)">
+        <input type="date" value="${s.date||new Date().toISOString().slice(0,10)}" style="font-size:11.5px;font-weight:700;opacity:.85;border:none;background:transparent;color:inherit;padding:0;width:105px;cursor:pointer;" onclick="event.stopPropagation();if(this.showPicker)this.showPicker();" onchange="event.stopPropagation();App.majDateSeance('${cid}','${s.id}',this.value)">
       </span>
       <button class="removeMember" style="font-size:15px;" onclick="event.stopPropagation();App.supprimerSeance('${cid}','${s.id}')" title="Supprimer la séance">✕</button>
     </div>`;
@@ -1609,9 +1609,6 @@ function renderSeanceContent(cid,c,s){
   const view = getActiveSubTab(viewKey,"live");
 
   let html = `<div class="seanceContent">
-      <div class="row" style="margin-bottom:12px;align-items:center;">
-        <span class="pill">${phase==='evaluation'?'Évaluation':'Pratique'}</span>
-      </div>
       <div class="subTabBar">
         <button class="subTab ${view==='live'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','live')">📋 Séance</button>
         <button class="subTab ${view==='config'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','config')">⚙️ Paramétrage</button>
