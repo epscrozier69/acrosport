@@ -1573,6 +1573,11 @@ App.removeCritere = function(cid,sid,type,idx){
 };
 
 function groupName(g,idx){ return "Groupe "+(idx+1); }
+function shortNomPrenom(e){
+  const nom = (e.nom||"").trim();
+  const firstWord = nom.split(/\s+/)[0] || nom;
+  return (firstWord+" "+(e.prenom||"")).trim();
+}
 function renderGroupCell(cid,s,c,g,idx){
   const isTarget = groupSelection && groupSelection.sid===s.id;
   return `<td class="${isTarget?'dropTarget':''}" style="white-space:nowrap;${isTarget?'cursor:pointer;':''}" ${isTarget?`onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')"`:''}>
@@ -1588,7 +1593,7 @@ function renderGroupCell(cid,s,c,g,idx){
         ondragover="event.preventDefault();event.stopPropagation();"
         ondrop="event.stopPropagation();App.handleMemberDrop(event,'${cid}','${s.id}','${g.id}','${mid}')"
         title="Glisser pour réordonner (détermine la composition des binômes)">
-        <span class="eleveChip ${isSel?'selected':''}" onclick="event.stopPropagation();App.clickEleveGroupe('${cid}','${s.id}','${mid}')">${e.nomPrenom}</span><button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></div>`;
+        <span class="eleveChip ${isSel?'selected':''}" onclick="event.stopPropagation();App.clickEleveGroupe('${cid}','${s.id}','${mid}')" title="${e.nomPrenom}">${shortNomPrenom(e)}</span><button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></div>`;
     }).join("")}
     ${g.membres.length===0?'<div style="font-size:11px;color:var(--muted);">Vide — cliquez un élève puis ce groupe.</div>':''}
   </td>`;
@@ -1624,13 +1629,13 @@ function renderSeanceContent(cid,c,s){
 
   const kPresence = "presence_"+s.id, kGroupes = "groupesBinomes_"+s.id;
 
-  html += sectionTitle(kPresence,"PRÉSENCE",true);
+  html += sectionTitle(kPresence,`PRÉSENCE (${present.length}/${c.eleves.length} présent${present.length>1?'s':''})`,true);
   if(sectionOpen(kPresence,true)){
     html += `<div class="cards" style="margin-bottom:14px;">
         ${sortStudents(c.eleves).map(e=>{
           const isAbs = s.absents.includes(e.id), isDisp = s.dispenses.includes(e.id);
-          return `<div class="gcard" style="padding:6px 10px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="${isAbs||isDisp?'opacity:.45;text-decoration:line-through;':''}">${e.nomPrenom}</span>
+          return `<div class="gcard" style="padding:6px 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;">
+            <span style="white-space:nowrap;${isAbs||isDisp?'opacity:.45;text-decoration:line-through;':''}" title="${e.nomPrenom}">${shortNomPrenom(e)}</span>
             <span style="display:flex;gap:4px;">
               <label class="pill" style="background:${isAbs?'var(--i-bg)':'#eee'};color:${isAbs?'var(--i)':'#888'};cursor:pointer;">
                 <input type="checkbox" style="display:none;" ${isAbs?'checked':''} onchange="App.toggleAbsent('${cid}','${s.id}','${e.id}','absent')">Abs</label>
@@ -1945,7 +1950,7 @@ function renderUnifiedEvalTable(cid,c,s,hideDomains){
             })();
 
         html += `<tr>`;
-        html += `<td class="nameCell" style="white-space:nowrap;"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">${e.nomPrenom}<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></span></td>`;
+        html += `<td class="nameCell" style="white-space:nowrap;" title="${e.nomPrenom}"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">${shortNomPrenom(e)}<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></span></td>`;
         html += figCells;
         html += figTierCell;
         domains.forEach(d=>{
@@ -2096,7 +2101,7 @@ function renderNotesSeanceTable(cid,c,s,phase){
   </div>`;
 
   html += `<div class="table-wrap" style="max-height:none;overflow-y:visible;overflow-x:auto;"><table style="width:auto;"><thead><tr>
-    ${sortMode==='groupe'?'<th>GR</th>':''}
+    ${sortMode==='groupe'?'<th style="width:30px;padding-left:6px;padding-right:6px;text-align:center;">GR</th>':''}
     <th>Élève</th><th>Statut</th><th>Figures validées</th><th>Implication</th><th>Attitude</th><th>Spectateurs</th>
   </tr></thead><tbody>`;
 
@@ -2114,7 +2119,7 @@ function renderNotesSeanceTable(cid,c,s,phase){
       g.membres.forEach((mid,mi)=>{
         const e = c.eleves.find(x=>x.id===mid); if(!e) return;
         html += `<tr style="background:${gBg};border-left:4px solid ${gBorder};${mi===0?`border-top:3px solid ${gBorder};`:''}">`;
-        if(mi===0) html += `<td class="grCell" rowspan="${g.membres.length}" style="background:${gBg};color:${gBorder};">${gidx+1}</td>`;
+        if(mi===0) html += `<td class="grCell" rowspan="${g.membres.length}" style="background:${gBg};color:${gBorder};width:30px;padding-left:6px;padding-right:6px;text-align:center;">${gidx+1}</td>`;
         html += rowCells(e);
         html += `</tr>`;
       });
