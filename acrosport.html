@@ -186,14 +186,14 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;}
 .gcard.unassigned{background:#fff6e9;border-color:#ffcc80;}
 .gcard.poolSelected{background:var(--brand-light);border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light);}
 .gcard h4{font-size:12.5px;margin-bottom:6px;color:var(--brand-dark);display:flex;justify-content:space-between;align-items:center;}
-.member{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12.5px;border-bottom:1px dashed #e7e9f2;}
+.member{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:1px 0;font-size:12.5px;border-bottom:1px dashed #e7e9f2;white-space:nowrap;}
 .member:last-child{border-bottom:none;}
 .gcard.dropTarget{cursor:pointer;}
 .gcard.dropTarget:hover{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light);}
 td.dropTarget:hover{background:var(--brand-light);}
 .gcard.newGroupTile{display:flex;align-items:center;justify-content:center;cursor:pointer;border-style:dashed;color:var(--brand-dark);font-weight:700;min-height:60px;}
 .gcard.newGroupTile:hover{background:var(--brand-light);}
-.eleveChip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:7px;cursor:pointer;border:1.5px solid transparent;}
+.eleveChip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:7px;cursor:pointer;border:1.5px solid transparent;white-space:nowrap;}
 .eleveChip:hover{background:#eef0fa;}
 .eleveChip.selected{background:var(--brand);color:#fff;border-color:var(--brand-dark);}
 .removeMember{border:none;background:none;color:var(--i);cursor:pointer;font-size:12px;padding:0 3px;}
@@ -205,6 +205,7 @@ td.dropTarget:hover{background:var(--brand-light);}
 .figThumb .name{font-size:10.5px;margin-top:3px;font-weight:600;color:var(--muted);word-break:break-word;}
 .figThumb.selected{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light);}
 
+.valTable td,.valTable th,.evalResultsTable td,.evalResultsTable th{padding:4px 8px;}
 .valTable td.valcell{text-align:center;cursor:pointer;}
 .valcheck{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:transparent;}
 .valcheck.done{background:var(--s);border-color:var(--s);color:#fff;}
@@ -1574,10 +1575,10 @@ App.removeCritere = function(cid,sid,type,idx){
 function groupName(g,idx){ return "Groupe "+(idx+1); }
 function renderGroupCell(cid,s,c,g,idx){
   const isTarget = groupSelection && groupSelection.sid===s.id;
-  return `<td class="${isTarget?'dropTarget':''}" style="max-width:170px;white-space:normal;${isTarget?'cursor:pointer;':''}" ${isTarget?`onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')"`:''}>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:3px;">
+  return `<td class="${isTarget?'dropTarget':''}" style="white-space:nowrap;${isTarget?'cursor:pointer;':''}" ${isTarget?`onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')"`:''}>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:1px;">
       <b>${groupName(g,idx)}</b>
-      <button class="btn small danger" style="padding:1px 6px;" onclick="event.stopPropagation();App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button>
+      <button class="btn small danger" style="padding:0 5px;" onclick="event.stopPropagation();App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button>
     </div>
     ${g.membres.map(mid=>{
       const e = c.eleves.find(x=>x.id===mid); if(!e) return "";
@@ -1944,7 +1945,7 @@ function renderUnifiedEvalTable(cid,c,s,hideDomains){
             })();
 
         html += `<tr>`;
-        html += `<td class="nameCell" style="white-space:normal;max-width:150px;"><span style="display:flex;align-items:center;justify-content:space-between;gap:4px;">${e.nomPrenom}<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></span></td>`;
+        html += `<td class="nameCell" style="white-space:nowrap;"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">${e.nomPrenom}<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></span></td>`;
         html += figCells;
         html += figTierCell;
         domains.forEach(d=>{
