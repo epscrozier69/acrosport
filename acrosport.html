@@ -127,7 +127,7 @@ main{padding:0 16px 40px;max-width:1500px;margin:0 auto;}
 .subTab.active{background:var(--class-bg,var(--brand));color:#fff;border-color:var(--class-border,var(--brand-dark));}
 .subTab.small2{padding:6px 11px;font-size:11.5px;}
 
-.plainSectionTitle{font-size:12.5px;margin-bottom:6px;color:var(--muted);cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px;}
+.plainSectionTitle{font-size:13.5px;font-weight:800;margin-bottom:6px;color:var(--ink);cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px;}
 .plainSectionTitle:hover{color:var(--brand-dark);}
 .plainSectionTitle .chev2{display:inline-block;transition:transform .15s;font-size:10px;color:var(--brand);}
 .plainSectionTitle.open .chev2{transform:rotate(90deg);}
@@ -1273,26 +1273,28 @@ function renderElevesPanel(cid,c){
 }
 
 function renderSeancesPanel(cid,c){
-  let html = `<div class="row" style="margin-bottom:12px;">
-        <button class="btn primary" onclick="App.creerSeance('${cid}')">+ Nouvelle séance</button>
-      </div>`;
   if(c.seances.length===0){
-    html += `<div class="emptyState">Aucune séance créée.</div>`;
-    return html;
+    return `<div class="row" style="margin-bottom:12px;">
+        <button class="btn primary" onclick="App.creerSeance('${cid}')">+ Nouvelle séance</button>
+      </div><div class="emptyState">Aucune séance créée.</div>`;
   }
   const tabKey = "seanceActive_"+cid;
   let activeId = getActiveSubTab(tabKey,null);
   if(!activeId || !c.seances.some(s=>s.id===activeId)){
     activeId = c.seances[c.seances.length-1].id;
   }
-  html += `<div class="subTabBar">`;
+  let html = `<div class="subTabBar" style="align-items:center;">
+    <button class="btn primary" onclick="App.creerSeance('${cid}')">+ Nouvelle séance</button>`;
   for(const s of c.seances){
     const dateParts = (s.date||"").split("-");
     const dateShort = dateParts.length===3 ? `${dateParts[2]}/${dateParts[1]}` : "";
-    html += `<button class="subTab small2 ${activeId===s.id?'active':''}" style="display:flex;flex-direction:column;align-items:center;line-height:1.25;" onclick="App.setActiveSubTab('${tabKey}','${s.id}')">
-      <span>Séance ${s.numero}</span>
-      <span style="font-size:10px;font-weight:600;opacity:.85;">${dateShort}</span>
-    </button>`;
+    html += `<div class="subTab small2 ${activeId===s.id?'active':''}" style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="App.setActiveSubTab('${tabKey}','${s.id}')">
+      <span style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
+        <span style="font-size:14.5px;font-weight:800;">Séance ${s.numero}</span>
+        <span style="font-size:12px;font-weight:700;opacity:.85;">${dateShort}</span>
+      </span>
+      <button class="removeMember" style="font-size:15px;" onclick="event.stopPropagation();App.supprimerSeance('${cid}','${s.id}')" title="Supprimer la séance">✕</button>
+    </div>`;
   }
   html += `</div>`;
   const s = c.seances.find(sv=>sv.id===activeId);
@@ -1610,9 +1612,8 @@ function renderSeanceContent(cid,c,s){
 
   let html = `<div class="seanceContent">
       <div class="row" style="margin-bottom:12px;align-items:center;">
-        <h3 style="font-size:15px;">Séance ${s.numero} ${phase==='evaluation'?'· Évaluation':'· Pratique'}</h3>
+        <span class="pill">${phase==='evaluation'?'Évaluation':'Pratique'}</span>
         <div class="field"><label>Date</label><input type="date" value="${s.date}" onchange="App.majDateSeance('${cid}','${s.id}',this.value)"></div>
-        <button class="btn small danger" onclick="App.supprimerSeance('${cid}','${s.id}')">🗑️ Supprimer la séance</button>
       </div>
       <div class="subTabBar">
         <button class="subTab ${view==='live'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','live')">📋 Séance</button>
