@@ -1286,12 +1286,10 @@ function renderSeancesPanel(cid,c){
   let html = `<div class="subTabBar" style="align-items:center;">
     <button class="btn primary" onclick="App.creerSeance('${cid}')">+ Nouvelle séance</button>`;
   for(const s of c.seances){
-    const dateParts = (s.date||"").split("-");
-    const dateShort = dateParts.length===3 ? `${dateParts[2]}/${dateParts[1]}` : "";
     html += `<div class="subTab small2 ${activeId===s.id?'active':''}" style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="App.setActiveSubTab('${tabKey}','${s.id}')">
       <span style="display:flex;flex-direction:column;align-items:center;line-height:1.3;">
         <span style="font-size:14.5px;font-weight:800;">Séance ${s.numero}</span>
-        <span style="font-size:12px;font-weight:700;opacity:.85;">${dateShort}</span>
+        <input type="date" value="${s.date||new Date().toISOString().slice(0,10)}" style="font-size:12px;font-weight:700;opacity:.85;border:none;background:transparent;color:inherit;padding:0;width:84px;cursor:pointer;" onclick="event.stopPropagation();if(this.showPicker)this.showPicker();" onchange="event.stopPropagation();App.majDateSeance('${cid}','${s.id}',this.value)">
       </span>
       <button class="removeMember" style="font-size:15px;" onclick="event.stopPropagation();App.supprimerSeance('${cid}','${s.id}')" title="Supprimer la séance">✕</button>
     </div>`;
@@ -1613,7 +1611,6 @@ function renderSeanceContent(cid,c,s){
   let html = `<div class="seanceContent">
       <div class="row" style="margin-bottom:12px;align-items:center;">
         <span class="pill">${phase==='evaluation'?'Évaluation':'Pratique'}</span>
-        <div class="field"><label>Date</label><input type="date" value="${s.date}" onchange="App.majDateSeance('${cid}','${s.id}',this.value)"></div>
       </div>
       <div class="subTabBar">
         <button class="subTab ${view==='live'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','live')">📋 Séance</button>
