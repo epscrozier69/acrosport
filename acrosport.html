@@ -1498,25 +1498,6 @@ App.deplacerOrdre = function(cid,sid,groupeId,eid,direction){
   save(); render();
 };
 
-App.handleMemberDragStart = function(ev,eid){
-  ev.dataTransfer.setData("text/plain",eid);
-};
-App.handleMemberDrop = function(ev,cid,sid,groupeId,targetEid){
-  ev.preventDefault();
-  const draggedEid = ev.dataTransfer.getData("text/plain");
-  if(!draggedEid || draggedEid===targetEid) return;
-  const s = findSeance(cid,sid);
-  const g = s.groupes.find(x=>x.id===groupeId);
-  if(!g) return;
-  const from = g.membres.indexOf(draggedEid);
-  if(from<0) return;
-  g.membres.splice(from,1);
-  const to = g.membres.indexOf(targetEid);
-  if(to<0) return;
-  g.membres.splice(to,0,draggedEid);
-  save(); render();
-};
-
 const FIG_STATE_CYCLE = [null,"done","wave","cross"];
 App.toggleValidation = function(cid,sid,groupeId,figId){
   const s = findSeance(cid,sid);
@@ -1575,15 +1556,15 @@ function shortNomPrenom(e){
 }
 function renderGroupCell(cid,s,c,g,idx){
   const isTarget = groupSelection && groupSelection.sid===s.id;
-  const renderMember = (mid)=>{
+  const renderMember = (mid,mi)=>{
     const e = c.eleves.find(x=>x.id===mid); if(!e) return "";
     const isSel = groupSelection && groupSelection.sid===s.id && groupSelection.eid===mid;
-    return `<div class="member" draggable="true" style="cursor:grab;"
-      ondragstart="event.stopPropagation();App.handleMemberDragStart(event,'${mid}')"
-      ondragover="event.preventDefault();event.stopPropagation();"
-      ondrop="event.stopPropagation();App.handleMemberDrop(event,'${cid}','${s.id}','${g.id}','${mid}')"
-      title="Glisser pour réordonner les membres du groupe">
-      <span class="eleveChip ${isSel?'selected':''}" onclick="event.stopPropagation();App.clickEleveGroupe('${cid}','${s.id}','${mid}')" title="${e.nomPrenom}">${shortNomPrenom(e)}</span><button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></div>`;
+    return `<div class="member">
+      <span style="display:flex;gap:2px;">
+        <button class="ordreBtn" onclick="event.stopPropagation();App.deplacerOrdre('${cid}','${s.id}','${g.id}','${mid}',-1)" ${mi===0?'disabled':''} title="Monter">▲</button>
+        <button class="ordreBtn" onclick="event.stopPropagation();App.deplacerOrdre('${cid}','${s.id}','${g.id}','${mid}',1)" ${mi===g.membres.length-1?'disabled':''} title="Descendre">▼</button>
+      </span>
+      <span class="eleveChip ${isSel?'selected':''}" style="flex:1;" onclick="event.stopPropagation();App.clickEleveGroupe('${cid}','${s.id}','${mid}')" title="${e.nomPrenom}">${shortNomPrenom(e)}</span><button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></div>`;
   };
   return `<td class="${isTarget?'dropTarget':''}" style="white-space:nowrap;${isTarget?'cursor:pointer;':''}" ${isTarget?`onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')"`:''}>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:1px;">
@@ -1642,7 +1623,7 @@ function renderSeanceContent(cid,c,s){
   if(sectionOpen(kGroupes,true) && groupSelection && groupSelection.sid===s.id){
     html += `<div class="hint" style="margin-bottom:10px;">
         👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un groupe existant (ou « + Nouveau groupe ») pour l'y placer. Cliquez à nouveau sur son nom pour annuler.
-        ${s.numero<=3 ? ` Les groupes peuvent compter 3, 4, 5 ou 6 élèves ; glissez les noms dans le tableau pour réordonner le groupe.` : ``}
+        ${s.numero<=3 ? ` Les groupes peuvent compter 3, 4, 5 ou 6 élèves ; utilisez les flèches ▲▼ pour réordonner le groupe.` : ``}
       </div>`;
   }
 
