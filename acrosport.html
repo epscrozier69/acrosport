@@ -188,9 +188,6 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;}
 .gcard h4{font-size:12.5px;margin-bottom:6px;color:var(--brand-dark);display:flex;justify-content:space-between;align-items:center;}
 .member{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:1px 0;font-size:12.5px;border-bottom:1px dashed #e7e9f2;white-space:nowrap;}
 .member:last-child{border-bottom:none;}
-.pairBlock{border:1px dashed #d8dcec;border-radius:6px;padding:2px 5px;margin:3px 0;background:#fafbff;}
-.pairBlock .member{border-bottom:none;}
-.pairLabel{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:1px;}
 .gcard.dropTarget{cursor:pointer;}
 .gcard.dropTarget:hover{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light);}
 td.dropTarget:hover{background:var(--brand-light);}
@@ -1183,13 +1180,8 @@ function efFigColumnsForStudent(c,eid){
   const bank = niveau().figuresBank;
   const groupFigIds = ef.figuresParGroupe[g.id] || [];
   const figColumns = groupFigIds.map(id=>bank.find(f=>f.id===id)).filter(Boolean);
-  const isDuoFig = f => g.membres.length>2 && /^d/i.test(f.nom);
-  let idx = 0;
-  if(g.membres.length>2){
-    const u = pairUpMembers(g.membres).find(u=>u.membres.includes(eid));
-    idx = u ? u.idx : 0;
-  }
-  return {g, figColumns, isDuoFig, idx};
+  const figKey = f => isIndivFig(f) ? (f.id+"_e"+eid) : f.id;
+  return {g, figColumns, figKey};
 }
 
 /* =========================================================================
@@ -1590,28 +1582,15 @@ function renderGroupCell(cid,s,c,g,idx){
       ondragstart="event.stopPropagation();App.handleMemberDragStart(event,'${mid}')"
       ondragover="event.preventDefault();event.stopPropagation();"
       ondrop="event.stopPropagation();App.handleMemberDrop(event,'${cid}','${s.id}','${g.id}','${mid}')"
-      title="Glisser pour réordonner (détermine la composition des binômes)">
+      title="Glisser pour réordonner les membres du groupe">
       <span class="eleveChip ${isSel?'selected':''}" onclick="event.stopPropagation();App.clickEleveGroupe('${cid}','${s.id}','${mid}')" title="${e.nomPrenom}">${shortNomPrenom(e)}</span><button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></div>`;
   };
-  const showPairs = s.numero<=3 && g.membres.length>2;
-  let membersHtml;
-  if(showPairs){
-    let out = "";
-    for(let i=0;i<g.membres.length;i+=2){
-      const pair = g.membres.slice(i,i+2);
-      const label = pair.length===2 ? `Binôme ${Math.floor(i/2)+1}` : `Seul(e)`;
-      out += `<div class="pairBlock"><div class="pairLabel">${label}</div>${pair.map(renderMember).join("")}</div>`;
-    }
-    membersHtml = out;
-  } else {
-    membersHtml = g.membres.map(renderMember).join("");
-  }
   return `<td class="${isTarget?'dropTarget':''}" style="white-space:nowrap;${isTarget?'cursor:pointer;':''}" ${isTarget?`onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')"`:''}>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:1px;">
       <b>${groupName(g,idx)}</b>
       <button class="btn small danger" style="padding:0 5px;" onclick="event.stopPropagation();App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button>
     </div>
-    ${membersHtml}
+    ${g.membres.map(renderMember).join("")}
     ${g.membres.length===0?'<div style="font-size:11px;color:var(--muted);">Vide — cliquez un élève puis ce groupe.</div>':''}
   </td>`;
 }
@@ -1663,7 +1642,7 @@ function renderSeanceContent(cid,c,s){
   if(sectionOpen(kGroupes,true) && groupSelection && groupSelection.sid===s.id){
     html += `<div class="hint" style="margin-bottom:10px;">
         👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un groupe existant (ou « + Nouveau groupe ») pour l'y placer. Cliquez à nouveau sur son nom pour annuler.
-        ${s.numero<=3 ? ` Les groupes peuvent compter 3, 4 ou 5 élèves ; les binômes qu'ils contiennent sont affichés par paires (glissez les noms pour les réordonner).` : ``}
+        ${s.numero<=3 ? ` Les groupes peuvent compter 3, 4, 5 ou 6 élèves ; glissez les noms dans le tableau pour réordonner le groupe.` : ``}
       </div>`;
   }
 
@@ -1797,19 +1776,16 @@ function lastSpectateurValue(c,eid){
 
 function renderFigureCell(cid,c,s,g,f){
   const v = s.validations[g.id] || {};
-  const indiv = isIndivFig(f);
-  const duo = !indiv && g.membres.length>2 && /^d/i.test(f.nom);
-  if(!indiv && !duo){
+  if(!isIndivFig(f)){
     const cur = v[f.id] || null;
     return `<td class="${cur?'tdTier-'+cur:''}" style="cursor:pointer;" onclick="App.cycleFigureRating('${cid}','${s.id}','${g.id}','${f.id}')" title="Cliquer pour changer (TB → S → F → I → vide)">${cur||'—'}</td>`;
   }
-  const units = indiv
-    ? g.membres.map(mid=>({key:f.id+"_e"+mid, label: shortNomPrenom(c.eleves.find(e=>e.id===mid)||{nom:"",prenom:""})}))
-    : pairUpMembers(g.membres).map(u=>({key:f.id+"_d"+u.idx, label:`Binôme ${u.idx+1}`}));
   return `<td style="padding:2px 4px;">
-    ${units.map(u=>{
-      const cur = v[u.key] || null;
-      return `<div class="miniRate ${cur?'tdTier-'+cur:''}" onclick="App.cycleFigureRating('${cid}','${s.id}','${g.id}','${u.key}')" title="${u.label} — cliquer pour changer (TB → S → F → I → vide)"><span class="miniRateLabel">${u.label}</span><span>${cur||'—'}</span></div>`;
+    ${g.membres.map(mid=>{
+      const key = f.id+"_e"+mid;
+      const cur = v[key] || null;
+      const label = shortNomPrenom(c.eleves.find(e=>e.id===mid)||{nom:"",prenom:""});
+      return `<div class="miniRate ${cur?'tdTier-'+cur:''}" onclick="App.cycleFigureRating('${cid}','${s.id}','${g.id}','${key}')" title="${label} — cliquer pour changer (TB → S → F → I → vide)"><span class="miniRateLabel">${label}</span><span>${cur||'—'}</span></div>`;
     }).join("")}
   </td>`;
 }
@@ -1848,21 +1824,17 @@ function gradingUnitKeyForStudent(s,eid){
   const g = s.groupes.find(g=>g.membres.includes(eid));
   return g ? g.id : null;
 }
-function pairUpMembers(membres){
-  const units = [];
-  let i=0, idx=0;
-  for(i=0; i+1<membres.length; i+=2){
-    units.push({idx, membres:[membres[i],membres[i+1]]});
-    idx++;
-  }
-  if(i<membres.length){
-    if(units.length>0) units[units.length-1].membres.push(membres[i]);
-    else units.push({idx:0, membres:[membres[i]]});
-  }
-  return units;
-}
 
-function isIndivFig(f){ return /^gym/i.test(f.nom); }
+function figCategory(nom){
+  const m = (nom||"").trim().match(/^(QUIN|GYM|[DTQ])/i);
+  return m ? m[1].toUpperCase() : null;
+}
+// Duos (D), trios (T) et séries gymniques (GYM) sont notés individuellement ;
+// quatuors (Q) et quintets (QUIN) sont notés collectivement pour tout le groupe.
+function isIndivFig(f){
+  const cat = figCategory(f.nom);
+  return cat==="D" || cat==="T" || cat==="GYM";
+}
 function figureValeurAuto(nom){
   const s = (nom||"").trim();
   const numMatch = s.match(/(\d+)\s*$/);
@@ -1924,10 +1896,6 @@ function renderUnifiedEvalTable(cid,c,s,hideDomains){
 
     html += `<div style="margin-bottom:18px;background:${gBg};border-left:5px solid ${gBorder};border-radius:10px;padding:10px 12px 12px;">`;
 
-    if(g.membres.length>2 && figColumns.some(f=>/^d/i.test(f.nom))){
-      html += `<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Figures « D… » : cochez sur la ligne du binôme qui la réalise (plusieurs binômes peuvent faire la même figure). Les autres figures sont communes à tout le groupe.</div>`;
-    }
-
     if(figColumns.length===0){
       html += `<div class="hint" style="margin-bottom:8px;">Aucune figure choisie pour ce groupe — sélectionnez-les dans l'onglet « ⚙️ Paramétrage ».</div>`;
     }
@@ -1947,42 +1915,37 @@ function renderUnifiedEvalTable(cid,c,s,hideDomains){
       ${domains.map(d=>`<th style="white-space:normal;min-width:150px;max-width:180px;">${d.label}<br><span style="font-weight:400;font-size:9.5px;color:var(--muted);text-transform:none;letter-spacing:0;display:block;text-align:center;">${(s.evalConfig[d.key].criteres||[]).join("<br>")}</span></th>`).join("")}
     </tr></thead><tbody>`;
 
-    const duoUnits = g.membres.length>2 ? pairUpMembers(g.membres) : [{idx:0, membres:g.membres}];
-    const isDuoFig = f => g.membres.length>2 && /^d/i.test(f.nom);
+    const v = s.validations[g.id] || {};
 
-    duoUnits.forEach(u=>{
-      const v = s.validations[g.id] || {};
+    g.membres.forEach(mid=>{
+      const e = c.eleves.find(x=>x.id===mid); if(!e) return;
+      let count = 0, points = 0, touched = false;
+      const figCells = figColumns.map(f=>{
+        const figKey = isIndivFig(f) ? (f.id+"_e"+mid) : f.id;
+        const state = v[figKey] || null;
+        const val = figureValeurAuto(f.nom) || 0;
+        if(state==="done"||state==="wave"||state==="cross") touched = true;
+        if(state==="done"){ count += 1; points += val; }
+        else if(state==="wave"){ count += 0.5; points += val*0.5; }
+        return `<td class="valcell" style="text-align:center;vertical-align:middle;" onclick="App.toggleValidation('${cid}','${s.id}','${g.id}','${figKey}')" ondblclick="event.stopPropagation();App.resetValidation('${cid}','${s.id}','${g.id}','${figKey}')" title="Clic : cercle → ✓ vert → 〜 orange → ✗ rouge → cercle. Double-clic : enlever le cercle (case vide).">${figStateMarkup(state,gBorder)}</td>`;
+      }).join("");
+      const figTierCell = hideDomains
+        ? `<td style="text-align:center;font-weight:800;">${touched?(points%1===0?points:points.toFixed(1)):0}/18</td>`
+        : (()=>{
+            const figTier = touched ? computeTierFromCount(s.evalConfig.nbFigures.tiers,count) : null;
+            return `<td>${badgeHtml(figTier)}<div style="font-size:9.5px;color:var(--muted);">${touched?(count%1===0?count:count.toFixed(1)):'—'}</div></td>`;
+          })();
 
-      u.membres.forEach(mid=>{
-        const e = c.eleves.find(x=>x.id===mid); if(!e) return;
-        let count = 0, points = 0, touched = false;
-        const figCells = figColumns.map(f=>{
-          const figKey = isIndivFig(f) ? (f.id+"_e"+mid) : isDuoFig(f) ? (f.id+"_d"+u.idx) : f.id;
-          const state = v[figKey] || null;
-          const val = figureValeurAuto(f.nom) || 0;
-          if(state==="done"||state==="wave"||state==="cross") touched = true;
-          if(state==="done"){ count += 1; points += val; }
-          else if(state==="wave"){ count += 0.5; points += val*0.5; }
-          return `<td class="valcell" style="text-align:center;vertical-align:middle;" onclick="App.toggleValidation('${cid}','${s.id}','${g.id}','${figKey}')" ondblclick="event.stopPropagation();App.resetValidation('${cid}','${s.id}','${g.id}','${figKey}')" title="Clic : cercle → ✓ vert → 〜 orange → ✗ rouge → cercle. Double-clic : enlever le cercle (case vide).">${figStateMarkup(state,gBorder)}</td>`;
-        }).join("");
-        const figTierCell = hideDomains
-          ? `<td style="text-align:center;font-weight:800;">${touched?(points%1===0?points:points.toFixed(1)):0}/18</td>`
-          : (()=>{
-              const figTier = touched ? computeTierFromCount(s.evalConfig.nbFigures.tiers,count) : null;
-              return `<td>${badgeHtml(figTier)}<div style="font-size:9.5px;color:var(--muted);">${touched?(count%1===0?count:count.toFixed(1)):'—'}</div></td>`;
-            })();
-
-        html += `<tr>`;
-        html += `<td class="nameCell" style="white-space:nowrap;" title="${e.nomPrenom}"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">${shortNomPrenom(e)}<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></span></td>`;
-        html += figCells;
-        html += figTierCell;
-        domains.forEach(d=>{
-          const domainKey = d.key==="liaisons" ? mid : g.id;
-          const cur = (s.tierManuel && s.tierManuel[d.key] && s.tierManuel[d.key][domainKey]) || null;
-          html += `<td class="${cur?'tdTier-'+cur:''}" style="cursor:pointer;" onclick="App.cycleTierManuel('${cid}','${s.id}','${d.key}','${domainKey}')" title="Cliquer pour changer (TB → S → F → I → vide)">${cur||'—'}</td>`;
-        });
-        html += `</tr>`;
+      html += `<tr>`;
+      html += `<td class="nameCell" style="white-space:nowrap;" title="${e.nomPrenom}"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">${shortNomPrenom(e)}<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></span></td>`;
+      html += figCells;
+      html += figTierCell;
+      domains.forEach(d=>{
+        const domainKey = d.key==="liaisons" ? mid : g.id;
+        const cur = (s.tierManuel && s.tierManuel[d.key] && s.tierManuel[d.key][domainKey]) || null;
+        html += `<td class="${cur?'tdTier-'+cur:''}" style="cursor:pointer;" onclick="App.cycleTierManuel('${cid}','${s.id}','${d.key}','${domainKey}')" title="Cliquer pour changer (TB → S → F → I → vide)">${cur||'—'}</td>`;
       });
+      html += `</tr>`;
     });
     html += `</tbody></table></div></div>`;
   });
@@ -2035,14 +1998,8 @@ function figColumnsForStudent(s,eid){
   const bank = niveau().figuresBank;
   const groupFigIds = (s.figuresParGroupe && s.figuresParGroupe[g.id]) || [];
   const figColumns = groupFigIds.map(id=>bank.find(f=>f.id===id)).filter(Boolean);
-  const isDuoFig = f => g.membres.length>2 && /^d/i.test(f.nom);
-  let idx = 0;
-  if(g.membres.length>2){
-    const u = pairUpMembers(g.membres).find(u=>u.membres.includes(eid));
-    idx = u ? u.idx : 0;
-  }
-  const figKey = f => isIndivFig(f) ? (f.id+"_e"+eid) : isDuoFig(f) ? (f.id+"_d"+idx) : f.id;
-  return {g, figColumns, isDuoFig, idx, figKey};
+  const figKey = f => isIndivFig(f) ? (f.id+"_e"+eid) : f.id;
+  return {g, figColumns, figKey};
 }
 function countFiguresForStudent(s,eid){
   const ctx = figColumnsForStudent(s,eid);
@@ -2317,8 +2274,7 @@ function efPointsForStudent(c,eid){
   const v = ef.validations[ctx.g.id] || {};
   let total = 0;
   ctx.figColumns.forEach(f=>{
-    const k = ctx.isDuoFig(f) ? (f.id+"_d"+ctx.idx) : f.id;
-    const state = v[k];
+    const state = v[ctx.figKey(f)];
     const val = figureValeurAuto(f.nom) || 0;
     if(state==="done") total += val;
     else if(state==="wave") total += val*0.5;
