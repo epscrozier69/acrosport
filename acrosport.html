@@ -2244,7 +2244,7 @@ function renderGymPanel(cid,c){
     {key:"atr", label:"ATR"}
   ];
 
-  let html = `<div class="table-wrap evalResultsTable" style="max-height:none;overflow-y:visible;"><table><thead><tr>
+  let html = `<div class="table-wrap evalResultsTable"><table><thead><tr>
     <th>Élève</th>
     ${agresList.map(a=>`<th style="white-space:normal;min-width:190px;max-width:230px;">${a.label}<br><span style="font-weight:400;font-size:9.5px;color:var(--muted);text-transform:none;letter-spacing:0;display:block;text-align:left;">${gymDefs[a.key].legend.map(o=>`<b>${o.l}</b> ${o.text}`).join("<br>")}</span></th>`).join("")}
   </tr></thead><tbody>
