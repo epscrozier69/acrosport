@@ -1727,8 +1727,7 @@ function renderFiguresConfig(cid,c,s){
     }).filter(Boolean).join(", ");
     return `<div class="acc nested ${open?'open':''}">
       <div class="acc-head" onclick="App.toggleAcc('${key}',${assignedIds.length===0})">
-        <span class="chev">▶</span><h3>${groupName(g,idx)}</h3>
-        ${noms ? `<span class="meta" style="font-weight:400;">${noms}</span>` : ''}
+        <span class="chev">▶</span><h3>${groupName(g,idx)}${noms ? ` <span style="font-weight:400;color:var(--muted);font-size:11.5px;">— ${noms}</span>` : ''}</h3>
         <span class="meta">${assignedIds.length} figure(s) choisie(s)</span>
       </div>
       <div class="acc-body">
