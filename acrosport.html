@@ -201,6 +201,8 @@ td.dropTarget:hover{background:var(--brand-light);}
 .eleveChip.selected{background:var(--brand);color:#fff;border-color:var(--brand-dark);}
 .removeMember{border:none;background:none;color:var(--i);cursor:pointer;font-size:12px;padding:0 3px;}
 .removeMember:hover{color:var(--i);opacity:.7;}
+.subTab.active .removeMember{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);}
+.subTab.active .removeMember:hover{color:#fff;opacity:.75;}
 
 .figGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;}
 .figThumb{border:2px solid var(--border);border-radius:10px;padding:4px;text-align:center;cursor:pointer;background:#fff;transition:.12s;}
@@ -1345,6 +1347,15 @@ App.creerSeance = function(cid){
     gymCriteriaUsed: false
   };
 
+  // dispense par défaut pour certains élèves (dispense permanente reconduite à chaque séance)
+  {
+    const DEFAULT_DISPENSED_NAMES = ["owen","snezhanka"];
+    c.eleves.forEach(e=>{
+      const nm = stripAccents(e.nomPrenom);
+      if(DEFAULT_DISPENSED_NAMES.some(n=>nm.includes(n))) seance.dispenses.push(e.id);
+    });
+  }
+
   // note spectateur : reportée depuis la séance précédente (20 par défaut en séance 1)
   {
     const prevSp = c.seances.length>0 ? c.seances.reduce((max,s)=>s.numero>max.numero?s:max) : null;
@@ -1363,16 +1374,16 @@ App.creerSeance = function(cid){
   }
 
   // groupes par défaut : reconduits depuis la séance précédente pour les binômes (séances 2 et 3,
-  // reprise de la séance immédiatement avant) et à partir de la séance 5 (modifiable),
-  // sinon construits manuellement par clic (séances 1 et 4)
+  // reprise de la séance immédiatement avant) et à partir de la séance 4 (modifiable),
+  // sinon construits manuellement par clic (séance 1, pas de séance précédente)
   if(numero>=2 && numero<=3){
-    const presents = c.eleves.map(e=>e.id);
+    const presents = c.eleves.map(e=>e.id).filter(id=>!seance.dispenses.includes(id));
     const prev = c.seances.find(s=>s.numero===numero-1);
     if(prev){
       seance.groupes = cloneDeep(prev.groupes).map(g=>({id:uid("gr"), membres:g.membres.filter(id=>presents.includes(id))})).filter(g=>g.membres.length>0);
     }
-  } else if(numero>=5){
-    const presents = c.eleves.map(e=>e.id);
+  } else if(numero>=4){
+    const presents = c.eleves.map(e=>e.id).filter(id=>!seance.dispenses.includes(id));
     const prev = [...c.seances].reverse().find(s=>s.numero<numero);
     if(prev){
       const pairs = prev.groupes.map(g=>({oldId:g.id, newGroup:{id:uid("gr"), membres:g.membres.filter(id=>presents.includes(id))}}))
