@@ -1349,7 +1349,7 @@ App.creerSeance = function(cid){
 
   // dispense par défaut pour certains élèves (dispense permanente reconduite à chaque séance)
   {
-    const DEFAULT_DISPENSED_NAMES = [["gabriel","lopez"],["iwen","boudjerada"]];
+    const DEFAULT_DISPENSED_NAMES = [["gabriel","lopez"],["iwen","boudjerada"],["snezhanka"]];
     c.eleves.forEach(e=>{
       const nm = stripAccents(e.nomPrenom);
       if(DEFAULT_DISPENSED_NAMES.some(tokens=>tokens.every(t=>nm.includes(t)))) seance.dispenses.push(e.id);
