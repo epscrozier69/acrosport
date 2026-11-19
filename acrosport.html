@@ -1615,9 +1615,9 @@ function renderSeanceContent(cid,c,s){
       </div>`;
 
   if(view==='config'){
-    html += renderFiguresConfig(cid,c,s);
     if(phase==='evaluation') html += renderEvaluationConfig(cid,c,s);
     else html += `<div class="hint" style="margin-top:10px;">Les grilles d'évaluation (figures/liaisons/projet) apparaissent à partir de la séance 4.</div>`;
+    html += renderFiguresConfig(cid,c,s);
     html += `</div>`;
     return html;
   }
