@@ -1626,9 +1626,8 @@ function renderSeanceContent(cid,c,s){
   const section = getActiveSubTab(sectionKey,"presence");
   const sections = [
     {id:"presence", label:`👥 Présence (${present.length}/${c.eleves.length})`},
-    {id:"groupes", label:"🧩 Groupes"},
-    {id:"figures", label:"🏅 Figures"},
-    {id:"notes", label:"📝 Notes"}
+    {id:"figures", label:"🏅 Eval séance"},
+    {id:"notes", label:"📝 Notes séances"}
   ];
   html += `<div class="subTabBar" style="margin-top:12px;">
       ${sections.map(o=>`<button class="subTab small2 ${section===o.id?'active':''}" onclick="App.setActiveSubTab('${sectionKey}','${o.id}')">${o.label}</button>`).join("")}
@@ -1651,7 +1650,8 @@ function renderSeanceContent(cid,c,s){
       </div>`;
   }
 
-  if(section==="groupes"){
+  if(section==="presence"){
+    html += `<h4 style="font-size:12px;margin:14px 0 6px;color:var(--muted);">🧩 GROUPES${s.groupes.length?` (${s.groupes.length})`:''}</h4>`;
     if(groupSelection && groupSelection.sid===s.id){
       html += `<div class="hint" style="margin-bottom:10px;">
           👉 <b>${(c.eleves.find(e=>e.id===groupSelection.eid)||{}).nomPrenom||''}</b> est sélectionné(e) — cliquez sur un groupe existant (ou « + Nouveau groupe ») pour l'y placer. Cliquez à nouveau sur son nom pour annuler.
@@ -1672,8 +1672,7 @@ function renderSeanceContent(cid,c,s){
     }
 
     if(s.groupes.length>0){
-      html += `<h4 style="font-size:12px;margin:0 0 6px;color:var(--muted);">🧩 GROUPES (${s.groupes.length})</h4>
-        <div class="cards" style="margin-bottom:10px;">
+      html += `<div class="cards" style="margin-bottom:10px;">
           ${s.groupes.map((g,idx)=>renderGroupCard(cid,s,c,g,idx)).join("")}
         </div>`;
     }
