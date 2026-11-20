@@ -1957,8 +1957,10 @@ function renderUnifiedEvalTable(cid,c,s,hideDomains,embedded){
       const figTierCell = hideDomains
         ? `<td style="text-align:center;font-weight:800;">${touched?(points%1===0?points:points.toFixed(1)):0}/18</td>`
         : (()=>{
-            const figTier = touched ? computeTierFromCount(s.evalConfig.nbFigures.tiers,count) : null;
-            return `<td>${badgeHtml(figTier)}<div style="font-size:9.5px;color:var(--muted);">${touched?(count%1===0?count:count.toFixed(1)):'—'}</div></td>`;
+            const autoTier = touched ? computeTierFromCount(s.evalConfig.nbFigures.tiers,count) : null;
+            const manualTier = (s.tierManuel && s.tierManuel.nbFigures && s.tierManuel.nbFigures[mid]) || null;
+            const figTier = manualTier || autoTier;
+            return `<td class="${figTier?'tdTier-'+figTier:''}" style="cursor:pointer;" onclick="App.cycleTierManuel('${cid}','${s.id}','nbFigures','${mid}')" title="Cliquer pour forcer la note (TB → S → F → I → auto)">${badgeHtml(figTier)}<div style="font-size:9.5px;color:var(--muted);">${touched?(count%1===0?count:count.toFixed(1)):'—'}</div></td>`;
           })();
 
       html += `<tr>`;
@@ -2049,6 +2051,8 @@ function figuresTouchedForStudent(s,eid){
 }
 function seanceGroupTier(s,eid,type){
   if(type==="nbFigures"){
+    const manualTier = (s.tierManuel && s.tierManuel.nbFigures && s.tierManuel.nbFigures[eid]) || null;
+    if(manualTier) return manualTier;
     if(!figuresTouchedForStudent(s,eid)) return null;
     return computeTierFromCount(s.evalConfig.nbFigures.tiers, countFiguresForStudent(s,eid));
   }
