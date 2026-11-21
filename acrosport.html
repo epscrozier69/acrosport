@@ -377,7 +377,7 @@ const LEVEL_DEFAULTS = {
       ]},
       atr: { legend:[
         {l:"TB",text:"Départ et retour en fente, aligné et gainé"},
-        {l:"S",text:"ATR au mur sans aide ou ATR passager avec pareur"},
+        {l:"S",text:"ATR au mur sans aide"},
         {l:"F",text:"ATR au mur avec aide"},
         {l:"I",text:"Pas de renversement"}
       ]}
@@ -2282,7 +2282,7 @@ function renderGymPanel(cid,c){
     {key:"rouladeAvant", label:"Roulade avant"},
     {key:"rouladeArriere", label:"Roulade arrière"},
     {key:"trepied", label: STATE.niveauActif==='3eme' ? "Trépied tenu 3s" : "Trépied passager"},
-    {key:"atr", label:"ATR"}
+    {key:"atr", label:"ATR passager avec pareur"}
   ];
 
   let html = `<div class="table-wrap evalResultsTable" style="max-height:72vh;"><table><thead><tr>
@@ -2350,16 +2350,20 @@ function renderEvalFinalePanel(cid,c){
       <button class="btn small" onclick="App.rechargerEvalFinaleGroupes('${cid}')">🔄 Recharger depuis la dernière séance</button>
     </div>
     <div class="subTabBar">
-      <button class="subTab ${view==='live'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','live')">📋 Figures</button>
       <button class="subTab ${view==='config'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','config')">⚙️ Paramétrage</button>
+      <button class="subTab ${view==='live'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','live')">🏅 Eval séance</button>
+      <button class="subTab ${view==='notes'?'active':''}" onclick="App.setActiveSubTab('${viewKey}','notes')">📝 Notes éval finale</button>
     </div>`;
 
   if(ef.groupes.length===0){
     html += `<div class="hint">Aucun groupe disponible — créez d'abord une séance avec des groupes.</div>`;
+    return html;
   } else if(view==='config'){
     html += renderFiguresConfig(cid,c,ef);
-  } else {
+    return html;
+  } else if(view!=='notes'){
     html += renderUnifiedEvalTable(cid,c,ef,true);
+    return html;
   }
 
   const sortKey = "evalFinaleSort_"+cid;
