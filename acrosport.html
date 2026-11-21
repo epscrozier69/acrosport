@@ -2575,6 +2575,7 @@ function renderExigences(){
 App.openSettingsModal = function(){
   openModal(`
     <div class="modalHead"><h3>⚙️ Paramètres de l'application</h3><button class="modalClose" onclick="App.closeModal()">✕</button></div>
+    <div class="modalBody">
     <div class="field" style="margin-bottom:14px;"><label>Lien du Google Sheet des élèves</label>
       <input type="text" style="width:100%;max-width:560px;" value="${App.getSheetUrl()}" onchange="App.setSheetUrl(this.value)"></div>
 
@@ -2596,6 +2597,7 @@ App.openSettingsModal = function(){
       <input type="text" style="width:100%;max-width:560px;" value="${App.getCarnetUrl()}" placeholder="https://script.google.com/macros/s/AKfycb.../exec" onchange="App.setCarnetUrl(this.value)"></div>
     <div class="field" style="margin-bottom:10px;"><label>Clé secrète de Carnet de bord</label>
       <input type="text" style="width:100%;max-width:560px;" value="${App.getCarnetKey()}" onchange="App.setCarnetKey(this.value)"></div>
+    </div>
   `);
 };
 
