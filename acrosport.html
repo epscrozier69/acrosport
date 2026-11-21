@@ -1571,34 +1571,39 @@ function shortNomPrenom(e){
   const firstWord = nom.split(/\s+/)[0] || nom;
   return (firstWord+" "+(e.prenom||"")).trim();
 }
-function groupCardInner(cid,s,c,g,idx){
+function groupCardInner(cid,s,c,g,idx,editable){
+  if(editable===undefined) editable = true;
   const renderMember = (mid,mi)=>{
     const e = c.eleves.find(x=>x.id===mid); if(!e) return "";
     const isSel = groupSelection && groupSelection.sid===s.id && groupSelection.eid===mid;
+    const nameOnClick = editable
+      ? `App.clickEleveGroupe('${cid}','${s.id}','${mid}')`
+      : `App.decrementSpectateur('${cid}','${s.id}','${mid}')`;
+    const nameTitle = editable ? e.nomPrenom : e.nomPrenom+" — cliquer : -1 point spectateur";
     return `<div class="member">
       <span style="display:flex;gap:2px;">
         <button class="ordreBtn" onclick="event.stopPropagation();App.deplacerOrdre('${cid}','${s.id}','${g.id}','${mid}',-1)" ${mi===0?'disabled':''} title="Monter">▲</button>
         <button class="ordreBtn" onclick="event.stopPropagation();App.deplacerOrdre('${cid}','${s.id}','${g.id}','${mid}',1)" ${mi===g.membres.length-1?'disabled':''} title="Descendre">▼</button>
       </span>
-      <span class="eleveChip ${isSel?'selected':''}" style="flex:1;" onclick="event.stopPropagation();App.clickEleveGroupe('${cid}','${s.id}','${mid}')" title="${e.nomPrenom}">${shortNomPrenom(e)}</span><button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></div>`;
+      <span class="eleveChip ${isSel?'selected':''}" style="flex:1;" onclick="event.stopPropagation();${nameOnClick}" title="${nameTitle}">${shortNomPrenom(e)}</span>${editable?`<button class="removeMember" onclick="event.stopPropagation();App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button>`:''}</div>`;
   };
   return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:1px;">
       <b>${groupName(g,idx)}</b>
-      <button class="btn small danger" style="padding:0 5px;" onclick="event.stopPropagation();App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button>
+      ${editable?`<button class="btn small danger" style="padding:0 5px;" onclick="event.stopPropagation();App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button>`:''}
     </div>
     ${g.membres.map(renderMember).join("")}
     ${g.membres.length===0?'<div style="font-size:11px;color:var(--muted);">Vide — cliquez un élève puis ce groupe.</div>':''}`;
 }
-function renderGroupCell(cid,s,c,g,idx){
-  const isTarget = groupSelection && groupSelection.sid===s.id;
+function renderGroupCell(cid,s,c,g,idx,editable){
+  const isTarget = editable!==false && groupSelection && groupSelection.sid===s.id;
   return `<td class="${isTarget?'dropTarget':''}" style="white-space:nowrap;${isTarget?'cursor:pointer;':''}" ${isTarget?`onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')"`:''}>
-    ${groupCardInner(cid,s,c,g,idx)}
+    ${groupCardInner(cid,s,c,g,idx,editable)}
   </td>`;
 }
-function renderGroupCard(cid,s,c,g,idx){
-  const isTarget = groupSelection && groupSelection.sid===s.id;
+function renderGroupCard(cid,s,c,g,idx,editable){
+  const isTarget = editable!==false && groupSelection && groupSelection.sid===s.id;
   return `<div class="gcard ${isTarget?'dropTarget':''}" ${isTarget?`onclick="App.clickGroupeCible('${cid}','${s.id}','${g.id}')"`:''}>
-    ${groupCardInner(cid,s,c,g,idx)}
+    ${groupCardInner(cid,s,c,g,idx,editable)}
   </div>`;
 }
 
@@ -1628,7 +1633,7 @@ function renderSeanceContent(cid,c,s){
   const sectionKey = "seanceSection_"+s.id;
   const section = getActiveSubTab(sectionKey,"presence");
   const sections = [
-    {id:"presence", label:`👥 Présence (${present.length}/${c.eleves.length})`},
+    {id:"presence", label:`👥 Présence/Groupe (${present.length}/${c.eleves.length})`},
     {id:"figures", label:"🏅 Eval séance"},
     {id:"notes", label:"📝 Notes séances"}
   ];
@@ -1692,7 +1697,7 @@ function renderSeanceContent(cid,c,s){
   }
 
   if(section==="figures"){
-    html += phase==='evaluation' ? renderUnifiedEvalTable(cid,c,s,false,true) : renderFiguresLive(cid,c,s,true);
+    html += phase==='evaluation' ? renderUnifiedEvalTable(cid,c,s,false,true,false) : renderFiguresLive(cid,c,s,true);
   }
 
   if(section==="notes"){
@@ -1844,7 +1849,7 @@ function renderFiguresLive(cid,c,s,embedded){
   const colspan = 1+assignedFigs.length+(assignedFigs.length?1:0);
   html += `<div class="table-wrap valTable" style="max-height:none;overflow-y:visible;"><table><thead><tr><th>Groupe</th>
     ${assignedFigs.map(f=>`<th><img src="${f.img}" style="width:${imgW}px;height:${imgH}px;object-fit:cover;border-radius:6px;display:block;margin:0 auto 3px;">${f.nom}</th>`).join("")}${assignedFigs.length?'<th>Évaluées</th>':''}</tr></thead><tbody>
-    ${s.groupes.map((g,idx)=>`<tr>${renderGroupCell(cid,s,c,g,idx)}
+    ${s.groupes.map((g,idx)=>`<tr>${renderGroupCell(cid,s,c,g,idx,false)}
       ${assignedFigs.map(f=>renderFigureCell(cid,c,s,g,f)).join("")}
       ${assignedFigs.length?`<td><b>${countValidations(s,g.id)}</b></td>`:''}
     </tr>`).join("")}
@@ -1903,7 +1908,8 @@ App.cycleTierManuel = function(cid,sid,type,key){
   save(); render();
 };
 
-function renderUnifiedEvalTable(cid,c,s,hideDomains,embedded){
+function renderUnifiedEvalTable(cid,c,s,hideDomains,embedded,editableGroups){
+  if(editableGroups===undefined) editableGroups = true;
   if(!s.evalConfig) return "";
   const bank = niveau().figuresBank;
   const groupesAvecMembres = s.groupes.filter(g=>g.membres.length>0);
@@ -1936,7 +1942,7 @@ function renderUnifiedEvalTable(cid,c,s,hideDomains,embedded){
     const imgW = Math.max(32, Math.min(80, Math.floor(760/Math.max(figColumns.length,1))));
     const imgH = Math.round(imgW*0.75);
     html += `<div class="table-wrap evalResultsTable" style="max-height:none;overflow-y:visible;"><table><thead><tr>
-      <th style="font-size:15px;font-weight:800;color:${gBorder};white-space:nowrap;"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">GROUPE ${gidx+1}<button class="btn small danger" style="padding:1px 6px;font-weight:400;" onclick="App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button></span></th>
+      <th style="font-size:15px;font-weight:800;color:${gBorder};white-space:nowrap;"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">GROUPE ${gidx+1}${editableGroups?`<button class="btn small danger" style="padding:1px 6px;font-weight:400;" onclick="App.supprimerGroupe('${cid}','${s.id}','${g.id}')" title="Dissoudre le groupe">🗑</button>`:''}</span></th>
       ${figColumns.map(f=>`<th draggable="true"
           ondragstart="event.dataTransfer.setData('text/plain','${f.id}')"
           ondragover="event.preventDefault()"
@@ -1972,7 +1978,10 @@ function renderUnifiedEvalTable(cid,c,s,hideDomains,embedded){
           })();
 
       html += `<tr>`;
-      html += `<td class="nameCell" style="white-space:nowrap;" title="${e.nomPrenom}"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">${shortNomPrenom(e)}<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button></span></td>`;
+      const nameSpan = editableGroups
+        ? shortNomPrenom(e)
+        : `<span style="cursor:pointer;" onclick="App.decrementSpectateur('${cid}','${s.id}','${mid}')" title="Cliquer : -1 point spectateur">${shortNomPrenom(e)}</span>`;
+      html += `<td class="nameCell" style="white-space:nowrap;" title="${e.nomPrenom}"><span style="display:flex;align-items:center;justify-content:space-between;gap:6px;">${nameSpan}${editableGroups?`<button class="removeMember" onclick="App.retirerDuGroupe('${cid}','${s.id}','${mid}')" title="Retirer du groupe">✕</button>`:''}</span></td>`;
       html += figCells;
       html += figTierCell;
       domains.forEach(d=>{
