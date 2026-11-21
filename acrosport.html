@@ -1399,6 +1399,9 @@ App.creerSeance = function(cid){
   c.seances.push(seance);
   c.seances.sort((a,b)=>a.numero-b.numero);
   save(); render();
+
+  // récupération automatique de la présence depuis Carnet de bord, si configurée (silencieuse)
+  if(App.getCarnetUrl() && App.getCarnetKey()) App.importerPresenceCarnet(cid, seance.id, true);
 };
 
 App.supprimerSeance = function(cid,sid){
@@ -1634,6 +1637,12 @@ function renderSeanceContent(cid,c,s){
     </div>`;
 
   if(section==="presence"){
+    if(App.getCarnetUrl() && App.getCarnetKey()){
+      html += `<div class="row" style="margin-bottom:8px;align-items:center;gap:8px;">
+          <button class="btn small" onclick="App.importerPresenceCarnet('${cid}','${s.id}',false)">🔄 Récupérer depuis Carnet de bord</button>
+          <span id="carnetStatusLine" style="font-size:11.5px;color:var(--muted);"></span>
+        </div>`;
+    }
     html += `<div class="cards">
         ${sortStudents(c.eleves).map(e=>{
           const isAbs = s.absents.includes(e.id), isDisp = s.dispenses.includes(e.id);
@@ -2580,10 +2589,77 @@ App.openSettingsModal = function(){
     </div>
     <div class="hint" style="margin-top:6px;">« Forcer » remplace toutes les données de cet appareil par celles du cloud, sans comparer les dates — à utiliser si un appareil refuse de se mettre à jour.</div>
     <div id="syncStatusLine" style="margin-top:8px;font-size:11.5px;color:var(--muted);"></div>
+
+    <h4 style="font-size:13px;margin:16px 0 6px;">📋 Présences depuis « Carnet de bord »</h4>
+    <div class="hint" style="margin-bottom:10px;">Même URL que celle configurée dans la synchronisation cloud de l'application « Carnet de bord » (⚙️ Paramètres de cette autre application). Une fois renseignée, la présence (Absent/Dispensé) de l'activité « Acrosport » est récupérée automatiquement à la création de chaque nouvelle séance, à la date du jour.</div>
+    <div class="field" style="margin-bottom:10px;"><label>URL du script Google de Carnet de bord</label>
+      <input type="text" style="width:100%;max-width:560px;" value="${App.getCarnetUrl()}" placeholder="https://script.google.com/macros/s/AKfycb.../exec" onchange="App.setCarnetUrl(this.value)"></div>
+    <div class="field" style="margin-bottom:10px;"><label>Clé secrète de Carnet de bord</label>
+      <input type="text" style="width:100%;max-width:560px;" value="${App.getCarnetKey()}" onchange="App.setCarnetKey(this.value)"></div>
   `);
 };
 
 App.setSheetUrl = function(val){ STATE.sheetUrl = normalize(val)||SHEET_URL_DEFAULT; save(); };
+
+/* =========================================================================
+   IMPORT AUTOMATIQUE DE LA PRÉSENCE DEPUIS "CARNET DE BORD"
+   (lecture seule du lien de synchro Google Apps Script de cette autre application)
+   ========================================================================= */
+App.getCarnetUrl = function(){ return STATE.carnetSyncUrl || ""; };
+App.setCarnetUrl = function(val){ STATE.carnetSyncUrl = normalize(val); save(); };
+App.getCarnetKey = function(){ return STATE.carnetSyncKey || ""; };
+App.setCarnetKey = function(val){ STATE.carnetSyncKey = normalize(val); save(); };
+
+App.updateCarnetStatus = function(msg){
+  const el = document.getElementById("carnetStatusLine");
+  if(el) el.textContent = msg;
+};
+
+function mapCarnetPresenceToStatut(code){
+  if(code==="ABS"||code==="SLASH"||code==="EXCETA") return "absent";
+  if(code==="DP"||code==="DISP") return "dispense";
+  return null; // "P" (présent) ou "RETARD" : rien à faire
+}
+
+App.importerPresenceCarnet = function(cid,sid,silent){
+  const url = App.getCarnetUrl();
+  const key = App.getCarnetKey();
+  if(!url || !key){ if(!silent) alert("Configurez d'abord l'URL et la clé secrète de Carnet de bord dans ⚙️ Paramètres."); return; }
+  const c = classe(cid);
+  const s = findSeance(cid,sid);
+  if(!c || !s) return;
+  if(!silent) App.updateCarnetStatus("🔄 Récupération en cours...");
+  const fetchUrl = url+(url.indexOf("?")>=0?"&":"?")+"key="+encodeURIComponent(key)+"&t="+Date.now();
+  fetch(fetchUrl, { method:"GET", cache:"no-store" })
+    .then(r=>r.json())
+    .then(remote=>{
+      if(remote && remote.error){ if(!silent) App.updateCarnetStatus(remote.error==="unauthorized" ? "⚠️ Clé secrète de Carnet de bord incorrecte." : "⚠️ Erreur Carnet de bord : "+remote.error); return; }
+      if(!remote || !remote.tabs){ if(!silent) App.updateCarnetStatus("⚠️ Données Carnet de bord introuvables."); return; }
+      const classeNorm = stripAccents(c.nom);
+      const tab = Object.values(remote.tabs).find(t=>t.kind==="classe" && stripAccents(t.name||"")===classeNorm);
+      if(!tab){ if(!silent) App.updateCarnetStatus("⚠️ Classe « "+c.nom+" » introuvable dans Carnet de bord."); return; }
+      const act = tab.activities && tab.activities["Acrosport"];
+      if(!act){ if(!silent) App.updateCarnetStatus("⚠️ Pas d'activité « Acrosport » pour cette classe dans Carnet de bord."); return; }
+      const ap = (act.appels||[]).find(a=>a.date===s.date);
+      if(!ap){ if(!silent) App.updateCarnetStatus("⚠️ Aucun appel du "+s.date+" trouvé dans Carnet de bord."); return; }
+      let changed = false;
+      (tab.students||[]).forEach(cs=>{
+        if(cs.archived) return;
+        const rec = ap.records && ap.records[cs.id];
+        if(!rec) return;
+        const statut = mapCarnetPresenceToStatut(rec.presence);
+        if(!statut) return;
+        const nm = stripAccents(cs.nomPrenom||"");
+        const match = c.eleves.find(e=>stripAccents(e.nomPrenom)===nm);
+        if(!match) return;
+        const arr = statut==="absent" ? s.absents : s.dispenses;
+        if(!arr.includes(match.id)){ arr.push(match.id); changed = true; }
+      });
+      if(changed){ save(); render(); }
+      if(!silent) App.updateCarnetStatus(changed ? "☁️ Présence importée depuis Carnet de bord." : "☁️ Déjà à jour avec Carnet de bord.");
+    })
+    .catch(()=>{ if(!silent) App.updateCarnetStatus("⚠️ Connexion à Carnet de bord impossible."); });
+};
 
 App.supprimerFigureBanque = function(fid){
   if(!confirm("Supprimer cette figure de la banque ?")) return;
