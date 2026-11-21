@@ -2402,7 +2402,7 @@ function renderEvalFinalePanel(cid,c){
       <button class="btn small ${sortMode==='groupe'?'primary':''}" onclick="App.setActiveSubTab('${sortKey}','groupe')">Par groupe</button>
       <button class="btn small ${sortMode==='alpha'?'primary':''}" onclick="App.setActiveSubTab('${sortKey}','alpha')">Alphabétique</button>
     </div>
-    <div class="table-wrap evalResultsTable resultsTable" style="max-height:560px;"><table><thead><tr>
+    <div class="table-wrap evalResultsTable resultsTable" style="max-height:none;overflow-y:visible;border:none;border-radius:0;"><table><thead><tr>
     ${sortMode==='groupe'?'<th>GR</th><th>N°</th>':''}
     <th>Élève</th>
     <th>Points<br><span style="font-weight:400;font-size:9.5px;color:var(--muted);text-transform:none;">figures /18</span></th>
